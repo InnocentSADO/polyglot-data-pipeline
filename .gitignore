@@ -1,0 +1,14 @@
+# Materiel fourni par le cours (non redistribue)
+Devoir_1_Enonce.pdf
+data/
+
+# Python / Jupyter
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# Systeme / editeurs
+Thumbs.db
+desktop.ini
+.DS_Store
+.vscode/
