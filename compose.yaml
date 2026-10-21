@@ -74,6 +74,7 @@ services:
     image: apache/hive:4.0.0
     profiles: [hadoop]
     hostname: hive
+    user: "0:0"
     environment:
       SERVICE_NAME: hiveserver2
       HIVE_SERVER2_THRIFT_PORT: 10000
