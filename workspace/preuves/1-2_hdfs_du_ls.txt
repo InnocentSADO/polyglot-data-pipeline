@@ -1,0 +1,23 @@
+### du -h
+2.9 M  2.9 M  /inf6303/devoir1/evenements/evenements_part_01.csv.gz
+2.9 M  2.9 M  /inf6303/devoir1/evenements/evenements_part_02.csv.gz
+2.9 M  2.9 M  /inf6303/devoir1/evenements/evenements_part_03.csv.gz
+2.9 M  2.9 M  /inf6303/devoir1/evenements/evenements_part_04.csv.gz
+2.9 M  2.9 M  /inf6303/devoir1/evenements/evenements_part_05.csv.gz
+2.9 M  2.9 M  /inf6303/devoir1/evenements/evenements_part_06.csv.gz
+2.9 M  2.9 M  /inf6303/devoir1/evenements/evenements_part_07.csv.gz
+2.9 M  2.9 M  /inf6303/devoir1/evenements/evenements_part_08.csv.gz
+### ls
+Found 8 items
+-rw-r--r--   1 jovyan supergroup    3064906 2026-10-21 00:39 /inf6303/devoir1/evenements/evenements_part_01.csv.gz
+-rw-r--r--   1 jovyan supergroup    3064636 2026-10-21 00:39 /inf6303/devoir1/evenements/evenements_part_02.csv.gz
+-rw-r--r--   1 jovyan supergroup    3064412 2026-10-21 00:40 /inf6303/devoir1/evenements/evenements_part_03.csv.gz
+-rw-r--r--   1 jovyan supergroup    3065083 2026-10-21 00:40 /inf6303/devoir1/evenements/evenements_part_04.csv.gz
+-rw-r--r--   1 jovyan supergroup    3064220 2026-10-21 00:40 /inf6303/devoir1/evenements/evenements_part_05.csv.gz
+-rw-r--r--   1 jovyan supergroup    3065291 2026-10-21 00:40 /inf6303/devoir1/evenements/evenements_part_06.csv.gz
+-rw-r--r--   1 jovyan supergroup    3064814 2026-10-21 00:40 /inf6303/devoir1/evenements/evenements_part_07.csv.gz
+-rw-r--r--   1 jovyan supergroup    3064466 2026-10-21 00:40 /inf6303/devoir1/evenements/evenements_part_08.csv.gz
+### count -h (dossiers, fichiers, taille)
+           1            8             23.4 M /inf6303/devoir1/evenements
+### taille d'un bloc HDFS
+134217728

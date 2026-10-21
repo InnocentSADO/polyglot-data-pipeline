@@ -1,0 +1,13 @@
+### lignes par fichier (en-tete inclus)
+evenements_part_01.csv.gz: 125001
+evenements_part_02.csv.gz: 125001
+evenements_part_03.csv.gz: 125001
+evenements_part_04.csv.gz: 125001
+evenements_part_05.csv.gz: 125001
+evenements_part_06.csv.gz: 125001
+evenements_part_07.csv.gz: 125001
+evenements_part_08.csv.gz: 125001
+### total lignes:
+1000008
+### octets decompresses:
+89405327
