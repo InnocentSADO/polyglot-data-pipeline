@@ -1,0 +1,11 @@
+drwxr-xr-x   - jovyan supergroup          0 2026-10-24 05:02 /inf6303/devoir1/catalogue
+-rw-r--r--   1 jovyan supergroup     81.1 K 2026-10-24 05:02 /inf6303/devoir1/catalogue/catalogue_contenus.csv
+drwxr-xr-x   - jovyan supergroup          0 2026-10-24 05:02 /inf6303/devoir1/evenements
+-rw-r--r--   1 jovyan supergroup      2.9 M 2026-10-24 05:02 /inf6303/devoir1/evenements/evenements_part_01.csv.gz
+-rw-r--r--   1 jovyan supergroup      2.9 M 2026-10-24 05:02 /inf6303/devoir1/evenements/evenements_part_02.csv.gz
+-rw-r--r--   1 jovyan supergroup      2.9 M 2026-10-24 05:02 /inf6303/devoir1/evenements/evenements_part_03.csv.gz
+-rw-r--r--   1 jovyan supergroup      2.9 M 2026-10-24 05:02 /inf6303/devoir1/evenements/evenements_part_04.csv.gz
+-rw-r--r--   1 jovyan supergroup      2.9 M 2026-10-24 05:02 /inf6303/devoir1/evenements/evenements_part_05.csv.gz
+-rw-r--r--   1 jovyan supergroup      2.9 M 2026-10-24 05:02 /inf6303/devoir1/evenements/evenements_part_06.csv.gz
+-rw-r--r--   1 jovyan supergroup      2.9 M 2026-10-24 05:02 /inf6303/devoir1/evenements/evenements_part_07.csv.gz
+-rw-r--r--   1 jovyan supergroup      2.9 M 2026-10-24 05:02 /inf6303/devoir1/evenements/evenements_part_08.csv.gz
