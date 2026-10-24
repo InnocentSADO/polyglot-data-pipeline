@@ -1,0 +1,1315 @@
+WARNING: log4j.properties is not found. HADOOP_CONF_DIR may be incomplete.
+SLF4J: Class path contains multiple SLF4J bindings.
+SLF4J: Found binding in [jar:file:/opt/hive/lib/log4j-slf4j-impl-2.18.0.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+SLF4J: Found binding in [jar:file:/opt/hadoop/share/hadoop/common/lib/slf4j-reload4j-1.7.36.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+SLF4J: See http://www.slf4j.org/codes.html#multiple_bindings for an explanation.
+SLF4J: Actual binding is of type [org.apache.logging.slf4j.Log4jLoggerFactory]
+WARNING: log4j.properties is not found. HADOOP_CONF_DIR may be incomplete.
+SLF4J: Class path contains multiple SLF4J bindings.
+SLF4J: Found binding in [jar:file:/opt/hive/lib/log4j-slf4j-impl-2.18.0.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+SLF4J: Found binding in [jar:file:/opt/hadoop/share/hadoop/common/lib/slf4j-reload4j-1.7.36.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+SLF4J: See http://www.slf4j.org/codes.html#multiple_bindings for an explanation.
+SLF4J: Actual binding is of type [org.apache.logging.slf4j.Log4jLoggerFactory]
+Connecting to jdbc:hive2://hive:10000/default
+Connected to: Apache Hive (version 4.0.0)
+Driver: Hive JDBC (version 4.0.0)
+Transaction isolation: TRANSACTION_REPEATABLE_READ
+0: jdbc:hive2://hive:10000/default> -- =====================================================================
+0: jdbc:hive2://hive:10000/default> -- INF6303 - Devoir 1 - Partie A : Hive/HiveQL
+0: jdbc:hive2://hive:10000/default> -- Execution :
+0: jdbc:hive2://hive:10000/default> --   beeline -u jdbc:hive2://hive:10000/default -n jovyan \
+0: jdbc:hive2://hive:10000/default> --           -f /home/jovyan/work/01_hive_analyse.sql
+0: jdbc:hive2://hive:10000/default> -- Script rejouable : DROP/CREATE des tables externes (les fichiers HDFS
+0: jdbc:hive2://hive:10000/default> -- ne sont jamais supprimes par un DROP d'une table EXTERNAL).
+0: jdbc:hive2://hive:10000/default> -- =====================================================================
+0: jdbc:hive2://hive:10000/default> 
+0: jdbc:hive2://hive:10000/default> CREATE DATABASE IF NOT EXISTS inf6303_devoir1;
+INFO  : Compiling command(queryId=root_20261024022721_28596fbe-a375-489b-892c-509f773063b9): CREATE DATABASE IF NOT EXISTS inf6303_devoir1
+INFO  : Semantic Analysis Completed (retrial = false)
+INFO  : Created Hive schema: Schema(fieldSchemas:null, properties:null)
+INFO  : Completed compiling command(queryId=root_20261024022721_28596fbe-a375-489b-892c-509f773063b9); Time taken: 0.004 seconds
+INFO  : Concurrency mode is disabled, not creating a lock manager
+INFO  : Executing command(queryId=root_20261024022721_28596fbe-a375-489b-892c-509f773063b9): CREATE DATABASE IF NOT EXISTS inf6303_devoir1
+INFO  : Starting task [Stage-0:DDL] in serial mode
+INFO  : Completed executing command(queryId=root_20261024022721_28596fbe-a375-489b-892c-509f773063b9); Time taken: 0.004 seconds
+No rows affected (0.04 seconds)
+0: jdbc:hive2://hive:10000/default> USE inf6303_devoir1;
+INFO  : Compiling command(queryId=root_20261024022721_6405be08-889a-4388-886b-835c55234229): USE inf6303_devoir1
+INFO  : Semantic Analysis Completed (retrial = false)
+INFO  : Created Hive schema: Schema(fieldSchemas:null, properties:null)
+INFO  : Completed compiling command(queryId=root_20261024022721_6405be08-889a-4388-886b-835c55234229); Time taken: 0.002 seconds
+INFO  : Concurrency mode is disabled, not creating a lock manager
+INFO  : Executing command(queryId=root_20261024022721_6405be08-889a-4388-886b-835c55234229): USE inf6303_devoir1
+INFO  : Starting task [Stage-0:DDL] in serial mode
+INFO  : Completed executing command(queryId=root_20261024022721_6405be08-889a-4388-886b-835c55234229); Time taken: 0.002 seconds
+No rows affected (0.013 seconds)
+0: jdbc:hive2://hive:10000/default> 
+0: jdbc:hive2://hive:10000/default> 
+0: jdbc:hive2://hive:10000/default> -- Format d'entree : HiveInputFormat (1 split par fichier gzip).
+0: jdbc:hive2://hive:10000/default> -- Le format par defaut (CombineHiveInputFormat) regroupe les 8 fichiers
+0: jdbc:hive2://hive:10000/default> -- dans un seul split et IGNORE skip.header.line.count (constate :
+0: jdbc:hive2://hive:10000/default> -- 2001 contenus et 8 lignes d'en-tete comptees comme evenements).
+0: jdbc:hive2://hive:10000/default> SET hive.input.format=org.apache.hadoop.hive.ql.io.HiveInputFormat;
+No rows affected (0.004 seconds)
+0: jdbc:hive2://hive:10000/default> 
+0: jdbc:hive2://hive:10000/default> -- Map join : la table de hachage du petit cote (catalogue, 2 000 lignes)
+0: jdbc:hive2://hive:10000/default> -- est construite dans le processus HiveServer2 plutot que dans un
+0: jdbc:hive2://hive:10000/default> -- sous-processus local (qui echoue dans ce conteneur : MapredLocalTask).
+0: jdbc:hive2://hive:10000/default> SET hive.exec.submit.local.task.via.child=false;
+No rows affected (0.004 seconds)
+0: jdbc:hive2://hive:10000/default> 
+0: jdbc:hive2://hive:10000/default> -- Statistiques de colonnes automatiques apres INSERT : desactivees.
+0: jdbc:hive2://hive:10000/default> -- Hive 4 lance un job MR supplementaire apres chaque INSERT ; ce job
+0: jdbc:hive2://hive:10000/default> -- echoue (meme bug de plan que UNION ALL sur le moteur MR deprecie).
+0: jdbc:hive2://hive:10000/default> SET hive.stats.column.autogather=false;
+No rows affected (0.004 seconds)
+0: jdbc:hive2://hive:10000/default> 
+0: jdbc:hive2://hive:10000/default> -- =====================================================================
+0: jdbc:hive2://hive:10000/default> -- A1. TABLES ET QUALITE
+0: jdbc:hive2://hive:10000/default> -- =====================================================================
+0: jdbc:hive2://hive:10000/default> 
+0: jdbc:hive2://hive:10000/default> -- A1.1 Table externe des evenements (10 colonnes typees)
+0: jdbc:hive2://hive:10000/default> --  * EXTERNAL : Hive ne gere que le schema ; les donnees restent dans HDFS.
+0: jdbc:hive2://hive:10000/default> --  * Les .csv.gz sont lus directement (codec gzip detecte par l'extension).
+0: jdbc:hive2://hive:10000/default> --  * skip.header.line.count=1 : ignore l'en-tete de CHACUN des 8 fichiers
+0: jdbc:hive2://hive:10000/default> --    (sinon 1 000 008 lignes au lieu de 1 000 000).
+0: jdbc:hive2://hive:10000/default> --  * timestamp.formats : event_ts est au format ISO 8601 avec un 'T'.
+0: jdbc:hive2://hive:10000/default> DROP TABLE IF EXISTS evenements_massifs;
+INFO  : Compiling command(queryId=root_20261024022722_e64e40f5-057e-4d91-96f2-14a7c901ff34): DROP TABLE IF EXISTS evenements_massifs
+INFO  : Semantic Analysis Completed (retrial = false)
+INFO  : Created Hive schema: Schema(fieldSchemas:null, properties:null)
+INFO  : Completed compiling command(queryId=root_20261024022722_e64e40f5-057e-4d91-96f2-14a7c901ff34); Time taken: 0.008 seconds
+INFO  : Concurrency mode is disabled, not creating a lock manager
+INFO  : Executing command(queryId=root_20261024022722_e64e40f5-057e-4d91-96f2-14a7c901ff34): DROP TABLE IF EXISTS evenements_massifs
+INFO  : Starting task [Stage-0:DDL] in serial mode
+INFO  : Completed executing command(queryId=root_20261024022722_e64e40f5-057e-4d91-96f2-14a7c901ff34); Time taken: 0.042 seconds
+No rows affected (0.062 seconds)
+0: jdbc:hive2://hive:10000/default> CREATE EXTERNAL TABLE evenements_massifs (
+. . . . . . . . . . . . . . . . . >   event_id      STRING,
+. . . . . . . . . . . . . . . . . >   user_id       STRING,
+. . . . . . . . . . . . . . . . . >   content_id    STRING,
+. . . . . . . . . . . . . . . . . >   event_type    STRING,
+. . . . . . . . . . . . . . . . . >   event_ts      TIMESTAMP,
+. . . . . . . . . . . . . . . . . >   country       STRING,
+. . . . . . . . . . . . . . . . . >   device        STRING,
+. . . . . . . . . . . . . . . . . >   watch_seconds INT,
+. . . . . . . . . . . . . . . . . >   quality       STRING,
+. . . . . . . . . . . . . . . . . >   session_id    STRING
+. . . . . . . . . . . . . . . . . > )
+. . . . . . . . . . . . . . . . . > ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe'
+. . . . . . . . . . . . . . . . . > WITH SERDEPROPERTIES (
+. . . . . . . . . . . . . . . . . >   'field.delim'       = ',',
+. . . . . . . . . . . . . . . . . >   'timestamp.formats' = "yyyy-MM-dd'T'HH:mm:ss"
+. . . . . . . . . . . . . . . . . > )
+. . . . . . . . . . . . . . . . . > STORED AS TEXTFILE
+. . . . . . . . . . . . . . . . . > LOCATION '/inf6303/devoir1/evenements'
+. . . . . . . . . . . . . . . . . > TBLPROPERTIES ('skip.header.line.count' = '1');
+INFO  : Compiling command(queryId=root_20261024022723_1bf9814f-ba62-4e28-8ec9-d190243f78f4): CREATE EXTERNAL TABLE evenements_massifs (
+event_id      STRING,
+user_id       STRING,
+content_id    STRING,
+event_type    STRING,
+event_ts      TIMESTAMP,
+country       STRING,
+device        STRING,
+watch_seconds INT,
+quality       STRING,
+session_id    STRING
+)
+ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe'
+WITH SERDEPROPERTIES (
+'field.delim'       = ',',
+'timestamp.formats' = "yyyy-MM-dd'T'HH:mm:ss"
+)
+STORED AS TEXTFILE
+LOCATION '/inf6303/devoir1/evenements'
+TBLPROPERTIES ('skip.header.line.count' = '1')
+INFO  : Semantic Analysis Completed (retrial = false)
+INFO  : Created Hive schema: Schema(fieldSchemas:null, properties:null)
+INFO  : Completed compiling command(queryId=root_20261024022723_1bf9814f-ba62-4e28-8ec9-d190243f78f4); Time taken: 0.004 seconds
+INFO  : Concurrency mode is disabled, not creating a lock manager
+INFO  : Executing command(queryId=root_20261024022723_1bf9814f-ba62-4e28-8ec9-d190243f78f4): CREATE EXTERNAL TABLE evenements_massifs (
+event_id      STRING,
+user_id       STRING,
+content_id    STRING,
+event_type    STRING,
+event_ts      TIMESTAMP,
+country       STRING,
+device        STRING,
+watch_seconds INT,
+quality       STRING,
+session_id    STRING
+)
+ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe'
+WITH SERDEPROPERTIES (
+'field.delim'       = ',',
+'timestamp.formats' = "yyyy-MM-dd'T'HH:mm:ss"
+)
+STORED AS TEXTFILE
+LOCATION '/inf6303/devoir1/evenements'
+TBLPROPERTIES ('skip.header.line.count' = '1')
+INFO  : Starting task [Stage-0:DDL] in serial mode
+INFO  : Completed executing command(queryId=root_20261024022723_1bf9814f-ba62-4e28-8ec9-d190243f78f4); Time taken: 0.024 seconds
+No rows affected (0.056 seconds)
+0: jdbc:hive2://hive:10000/default> 
+0: jdbc:hive2://hive:10000/default> -- A1.2 Table externe du catalogue (5 colonnes typees)
+0: jdbc:hive2://hive:10000/default> DROP TABLE IF EXISTS catalogue_contenus;
+INFO  : Compiling command(queryId=root_20261024022723_7ac4117b-5601-4a1a-a692-6fb4bf636a97): DROP TABLE IF EXISTS catalogue_contenus
+INFO  : Semantic Analysis Completed (retrial = false)
+INFO  : Created Hive schema: Schema(fieldSchemas:null, properties:null)
+INFO  : Completed compiling command(queryId=root_20261024022723_7ac4117b-5601-4a1a-a692-6fb4bf636a97); Time taken: 0.005 seconds
+INFO  : Concurrency mode is disabled, not creating a lock manager
+INFO  : Executing command(queryId=root_20261024022723_7ac4117b-5601-4a1a-a692-6fb4bf636a97): DROP TABLE IF EXISTS catalogue_contenus
+INFO  : Starting task [Stage-0:DDL] in serial mode
+INFO  : Completed executing command(queryId=root_20261024022723_7ac4117b-5601-4a1a-a692-6fb4bf636a97); Time taken: 0.028 seconds
+No rows affected (0.042 seconds)
+0: jdbc:hive2://hive:10000/default> CREATE EXTERNAL TABLE catalogue_contenus (
+. . . . . . . . . . . . . . . . . >   content_id   STRING,
+. . . . . . . . . . . . . . . . . >   title        STRING,
+. . . . . . . . . . . . . . . . . >   genre        STRING,
+. . . . . . . . . . . . . . . . . >   release_year INT,
+. . . . . . . . . . . . . . . . . >   duration_sec INT
+. . . . . . . . . . . . . . . . . > )
+. . . . . . . . . . . . . . . . . > ROW FORMAT DELIMITED FIELDS TERMINATED BY ','
+. . . . . . . . . . . . . . . . . > STORED AS TEXTFILE
+. . . . . . . . . . . . . . . . . > LOCATION '/inf6303/devoir1/catalogue'
+. . . . . . . . . . . . . . . . . > TBLPROPERTIES ('skip.header.line.count' = '1');
+INFO  : Compiling command(queryId=root_20261024022723_94751774-91e7-4c07-87e9-f47e92e8b50d): CREATE EXTERNAL TABLE catalogue_contenus (
+content_id   STRING,
+title        STRING,
+genre        STRING,
+release_year INT,
+duration_sec INT
+)
+ROW FORMAT DELIMITED FIELDS TERMINATED BY ','
+STORED AS TEXTFILE
+LOCATION '/inf6303/devoir1/catalogue'
+TBLPROPERTIES ('skip.header.line.count' = '1')
+INFO  : Semantic Analysis Completed (retrial = false)
+INFO  : Created Hive schema: Schema(fieldSchemas:null, properties:null)
+INFO  : Completed compiling command(queryId=root_20261024022723_94751774-91e7-4c07-87e9-f47e92e8b50d); Time taken: 0.002 seconds
+INFO  : Concurrency mode is disabled, not creating a lock manager
+INFO  : Executing command(queryId=root_20261024022723_94751774-91e7-4c07-87e9-f47e92e8b50d): CREATE EXTERNAL TABLE catalogue_contenus (
+content_id   STRING,
+title        STRING,
+genre        STRING,
+release_year INT,
+duration_sec INT
+)
+ROW FORMAT DELIMITED FIELDS TERMINATED BY ','
+STORED AS TEXTFILE
+LOCATION '/inf6303/devoir1/catalogue'
+TBLPROPERTIES ('skip.header.line.count' = '1')
+INFO  : Starting task [Stage-0:DDL] in serial mode
+INFO  : Completed executing command(queryId=root_20261024022723_94751774-91e7-4c07-87e9-f47e92e8b50d); Time taken: 0.024 seconds
+No rows affected (0.046 seconds)
+0: jdbc:hive2://hive:10000/default> 
+0: jdbc:hive2://hive:10000/default> -- A1.3 Volumes attendus : exactement 1 000 000 evenements et 2 000 contenus
+0: jdbc:hive2://hive:10000/default> -- (deux requetes separees : le moteur MapReduce de Hive 4 echoue a
+0: jdbc:hive2://hive:10000/default> --  deserialiser le plan reducer d'un UNION ALL -> KryoException)
+0: jdbc:hive2://hive:10000/default> SELECT COUNT(*) AS nb_evenements FROM evenements_massifs;
+INFO  : Compiling command(queryId=root_20261024022723_e62ea277-b840-4a3f-a0db-32429aecac28): SELECT COUNT(*) AS nb_evenements FROM evenements_massifs
+INFO  : Semantic Analysis Completed (retrial = false)
+INFO  : Created Hive schema: Schema(fieldSchemas:[FieldSchema(name:nb_evenements, type:bigint, comment:null)], properties:null)
+INFO  : Completed compiling command(queryId=root_20261024022723_e62ea277-b840-4a3f-a0db-32429aecac28); Time taken: 0.074 seconds
+INFO  : Concurrency mode is disabled, not creating a lock manager
+INFO  : Executing command(queryId=root_20261024022723_e62ea277-b840-4a3f-a0db-32429aecac28): SELECT COUNT(*) AS nb_evenements FROM evenements_massifs
+WARN  : Hive-on-MR is deprecated in Hive 2 and may not be available in the future versions. Consider using a different execution engine (i.e. tez) or using Hive 1.X releases.
+INFO  : Query ID = root_20261024022723_e62ea277-b840-4a3f-a0db-32429aecac28
+INFO  : Total jobs = 1
+INFO  : Launching Job 1 out of 1
+INFO  : Starting task [Stage-1:MAPRED] in serial mode
+INFO  : Number of reduce tasks determined at compile time: 1
+INFO  : In order to change the average load for a reducer (in bytes):
+INFO  :   set hive.exec.reducers.bytes.per.reducer=<number>
+INFO  : In order to limit the maximum number of reducers:
+INFO  :   set hive.exec.reducers.max=<number>
+INFO  : In order to set a constant number of reducers:
+INFO  :   set mapreduce.job.reduces=<number>
+INFO  : number of splits:8
+INFO  : Submitting tokens for job: job_1792541447442_0056
+INFO  : Executing with tokens: []
+INFO  : The url to track the job: http://resourcemanager:8088/proxy/application_1792541447442_0056/
+INFO  : Starting Job = job_1792541447442_0056, Tracking URL = http://resourcemanager:8088/proxy/application_1792541447442_0056/
+INFO  : Kill Command = /opt/hadoop/bin/mapred job  -kill job_1792541447442_0056
+INFO  : Hadoop job information for Stage-1: number of mappers: 8; number of reducers: 1
+INFO  : 2026-10-24 02:27:32,010 Stage-1 map = 0%,  reduce = 0%
+INFO  : 2026-10-24 02:27:39,273 Stage-1 map = 13%,  reduce = 0%, Cumulative CPU 2.79 sec
+INFO  : 2026-10-24 02:27:44,464 Stage-1 map = 25%,  reduce = 0%, Cumulative CPU 5.91 sec
+INFO  : 2026-10-24 02:27:49,634 Stage-1 map = 38%,  reduce = 0%, Cumulative CPU 8.35 sec
+INFO  : 2026-10-24 02:27:54,778 Stage-1 map = 50%,  reduce = 0%, Cumulative CPU 11.1 sec
+INFO  : 2026-10-24 02:27:59,925 Stage-1 map = 63%,  reduce = 0%, Cumulative CPU 14.05 sec
+INFO  : 2026-10-24 02:28:05,099 Stage-1 map = 75%,  reduce = 0%, Cumulative CPU 16.85 sec
+INFO  : 2026-10-24 02:28:10,246 Stage-1 map = 88%,  reduce = 0%, Cumulative CPU 19.46 sec
+INFO  : 2026-10-24 02:28:15,389 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 22.12 sec
+INFO  : 2026-10-24 02:28:18,480 Stage-1 map = 100%,  reduce = 100%, Cumulative CPU 23.95 sec
+INFO  : MapReduce Total cumulative CPU time: 23 seconds 950 msec
+INFO  : Ended Job = job_1792541447442_0056
+INFO  : MapReduce Jobs Launched: 
+INFO  : Stage-Stage-1: Map: 8  Reduce: 1   Cumulative CPU: 23.95 sec   HDFS Read: 24591924 HDFS Write: 107 HDFS EC Read: 0 SUCCESS
+INFO  : Total MapReduce CPU Time Spent: 23 seconds 950 msec
+INFO  : Completed executing command(queryId=root_20261024022723_e62ea277-b840-4a3f-a0db-32429aecac28); Time taken: 55.564 seconds
+1 row selected (55.672 seconds)
+0: jdbc:hive2://hive:10000/default> SELECT COUNT(*) AS nb_contenus   FROM catalogue_contenus;
+INFO  : Compiling command(queryId=root_20261024022819_19be34b4-a7b7-4d2d-b051-dcaf70dea8cf): SELECT COUNT(*) AS nb_contenus   FROM catalogue_contenus
+INFO  : Semantic Analysis Completed (retrial = false)
+INFO  : Created Hive schema: Schema(fieldSchemas:[FieldSchema(name:nb_contenus, type:bigint, comment:null)], properties:null)
+INFO  : Completed compiling command(queryId=root_20261024022819_19be34b4-a7b7-4d2d-b051-dcaf70dea8cf); Time taken: 0.064 seconds
+INFO  : Concurrency mode is disabled, not creating a lock manager
+INFO  : Executing command(queryId=root_20261024022819_19be34b4-a7b7-4d2d-b051-dcaf70dea8cf): SELECT COUNT(*) AS nb_contenus   FROM catalogue_contenus
+WARN  : Hive-on-MR is deprecated in Hive 2 and may not be available in the future versions. Consider using a different execution engine (i.e. tez) or using Hive 1.X releases.
+INFO  : Query ID = root_20261024022819_19be34b4-a7b7-4d2d-b051-dcaf70dea8cf
+INFO  : Total jobs = 1
+INFO  : Launching Job 1 out of 1
+INFO  : Starting task [Stage-1:MAPRED] in serial mode
+INFO  : Number of reduce tasks determined at compile time: 1
+INFO  : In order to change the average load for a reducer (in bytes):
+INFO  :   set hive.exec.reducers.bytes.per.reducer=<number>
+INFO  : In order to limit the maximum number of reducers:
+INFO  :   set hive.exec.reducers.max=<number>
+INFO  : In order to set a constant number of reducers:
+INFO  :   set mapreduce.job.reduces=<number>
+INFO  : number of splits:2
+INFO  : Submitting tokens for job: job_1792541447442_0057
+INFO  : Executing with tokens: []
+INFO  : The url to track the job: http://resourcemanager:8088/proxy/application_1792541447442_0057/
+INFO  : Starting Job = job_1792541447442_0057, Tracking URL = http://resourcemanager:8088/proxy/application_1792541447442_0057/
+INFO  : Kill Command = /opt/hadoop/bin/mapred job  -kill job_1792541447442_0057
+INFO  : Hadoop job information for Stage-1: number of mappers: 2; number of reducers: 1
+INFO  : 2026-10-24 02:28:32,033 Stage-1 map = 0%,  reduce = 0%
+INFO  : 2026-10-24 02:28:38,248 Stage-1 map = 50%,  reduce = 0%, Cumulative CPU 1.79 sec
+INFO  : 2026-10-24 02:28:43,408 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 3.5 sec
+INFO  : 2026-10-24 02:28:47,537 Stage-1 map = 100%,  reduce = 100%, Cumulative CPU 5.24 sec
+INFO  : MapReduce Total cumulative CPU time: 5 seconds 240 msec
+INFO  : Ended Job = job_1792541447442_0057
+INFO  : MapReduce Jobs Launched: 
+INFO  : Stage-Stage-1: Map: 2  Reduce: 1   Cumulative CPU: 5.24 sec   HDFS Read: 109855 HDFS Write: 104 HDFS EC Read: 0 SUCCESS
+INFO  : Total MapReduce CPU Time Spent: 5 seconds 240 msec
+INFO  : Completed executing command(queryId=root_20261024022819_19be34b4-a7b7-4d2d-b051-dcaf70dea8cf); Time taken: 28.932 seconds
+1 row selected (29.012 seconds)
+0: jdbc:hive2://hive:10000/default> 
+0: jdbc:hive2://hive:10000/default> -- A1.4 Qualite des evenements : tous les controles en UN SEUL passage
+0: jdbc:hive2://hive:10000/default> --  * Identifiants : NULL ou format non conforme (expression reguliere)
+0: jdbc:hive2://hive:10000/default> --  * Duree : NULL (valeur non numerique -> NULL a la lecture), negative,
+0: jdbc:hive2://hive:10000/default> --    ou superieure a 24 h (aberrante pour un evenement unique)
+0: jdbc:hive2://hive:10000/default> --  * Horodatage non interpretable, type d'evenement hors domaine
+0: jdbc:hive2://hive:10000/default> --  * Doublons : COUNT(DISTINCT event_id) doit egaler COUNT(*)
+0: jdbc:hive2://hive:10000/default> SELECT
+. . . . . . . . . . . . . . . . . >   COUNT(*)                                                                  AS nb_lignes,
+. . . . . . . . . . . . . . . . . >   COUNT(DISTINCT event_id)                                                  AS event_id_distincts,
+. . . . . . . . . . . . . . . . . >   COUNT(DISTINCT user_id)                                                   AS user_id_distincts,
+. . . . . . . . . . . . . . . . . >   SUM(IF(event_id   IS NULL OR NOT event_id   RLIKE '^e[0-9]{9}$', 1, 0))  AS event_id_invalides,
+. . . . . . . . . . . . . . . . . >   SUM(IF(user_id    IS NULL OR NOT user_id    RLIKE '^u[0-9]{6}$', 1, 0))  AS user_id_invalides,
+. . . . . . . . . . . . . . . . . >   SUM(IF(content_id IS NULL OR NOT content_id RLIKE '^c[0-9]{5}$', 1, 0))  AS content_id_invalides,
+. . . . . . . . . . . . . . . . . >   SUM(IF(watch_seconds IS NULL, 1, 0))                                      AS duree_nulle_non_numerique,
+. . . . . . . . . . . . . . . . . >   SUM(IF(watch_seconds < 0, 1, 0))                                          AS duree_negative,
+. . . . . . . . . . . . . . . . . >   SUM(IF(watch_seconds > 86400, 1, 0))                                      AS duree_sup_24h,
+. . . . . . . . . . . . . . . . . >   SUM(IF(event_ts IS NULL, 1, 0))                                           AS horodatage_invalide,
+. . . . . . . . . . . . . . . . . >   SUM(IF(event_type NOT IN ('lecture','pause','recherche','abandon','ajout_favori'), 1, 0)) AS type_hors_domaine,
+. . . . . . . . . . . . . . . . . >   MIN(watch_seconds)                                                        AS duree_min,
+. . . . . . . . . . . . . . . . . >   MAX(watch_seconds)                                                        AS duree_max,
+. . . . . . . . . . . . . . . . . >   MIN(event_ts)                                                             AS premier_evenement,
+. . . . . . . . . . . . . . . . . >   MAX(event_ts)                                                             AS dernier_evenement
+. . . . . . . . . . . . . . . . . > FROM evenements_massifs;
+INFO  : Compiling command(queryId=root_20261024022849_466ea2ac-dc7d-42c3-b47d-dddcb852ef2c): SELECT
+COUNT(*)                                                                  AS nb_lignes,
+COUNT(DISTINCT event_id)                                                  AS event_id_distincts,
+COUNT(DISTINCT user_id)                                                   AS user_id_distincts,
+SUM(IF(event_id   IS NULL OR NOT event_id   RLIKE '^e[0-9]{9}$', 1, 0))  AS event_id_invalides,
+SUM(IF(user_id    IS NULL OR NOT user_id    RLIKE '^u[0-9]{6}$', 1, 0))  AS user_id_invalides,
+SUM(IF(content_id IS NULL OR NOT content_id RLIKE '^c[0-9]{5}$', 1, 0))  AS content_id_invalides,
+SUM(IF(watch_seconds IS NULL, 1, 0))                                      AS duree_nulle_non_numerique,
+SUM(IF(watch_seconds < 0, 1, 0))                                          AS duree_negative,
+SUM(IF(watch_seconds > 86400, 1, 0))                                      AS duree_sup_24h,
+SUM(IF(event_ts IS NULL, 1, 0))                                           AS horodatage_invalide,
+SUM(IF(event_type NOT IN ('lecture','pause','recherche','abandon','ajout_favori'), 1, 0)) AS type_hors_domaine,
+MIN(watch_seconds)                                                        AS duree_min,
+MAX(watch_seconds)                                                        AS duree_max,
+MIN(event_ts)                                                             AS premier_evenement,
+MAX(event_ts)                                                             AS dernier_evenement
+FROM evenements_massifs
+INFO  : No Stats for inf6303_devoir1@evenements_massifs, Columns: event_id, event_type, user_id, content_id, watch_seconds, event_ts
+INFO  : Semantic Analysis Completed (retrial = false)
+INFO  : Created Hive schema: Schema(fieldSchemas:[FieldSchema(name:nb_lignes, type:bigint, comment:null), FieldSchema(name:event_id_distincts, type:bigint, comment:null), FieldSchema(name:user_id_distincts, type:bigint, comment:null), FieldSchema(name:event_id_invalides, type:bigint, comment:null), FieldSchema(name:user_id_invalides, type:bigint, comment:null), FieldSchema(name:content_id_invalides, type:bigint, comment:null), FieldSchema(name:duree_nulle_non_numerique, type:bigint, comment:null), FieldSchema(name:duree_negative, type:bigint, comment:null), FieldSchema(name:duree_sup_24h, type:bigint, comment:null), FieldSchema(name:horodatage_invalide, type:bigint, comment:null), FieldSchema(name:type_hors_domaine, type:bigint, comment:null), FieldSchema(name:duree_min, type:int, comment:null), FieldSchema(name:duree_max, type:int, comment:null), FieldSchema(name:premier_evenement, type:timestamp, comment:null), FieldSchema(name:dernier_evenement, type:timestamp, comment:null)], properties:null)
+INFO  : Completed compiling command(queryId=root_20261024022849_466ea2ac-dc7d-42c3-b47d-dddcb852ef2c); Time taken: 0.115 seconds
+INFO  : Concurrency mode is disabled, not creating a lock manager
+INFO  : Executing command(queryId=root_20261024022849_466ea2ac-dc7d-42c3-b47d-dddcb852ef2c): SELECT
+COUNT(*)                                                                  AS nb_lignes,
+COUNT(DISTINCT event_id)                                                  AS event_id_distincts,
+COUNT(DISTINCT user_id)                                                   AS user_id_distincts,
+SUM(IF(event_id   IS NULL OR NOT event_id   RLIKE '^e[0-9]{9}$', 1, 0))  AS event_id_invalides,
+SUM(IF(user_id    IS NULL OR NOT user_id    RLIKE '^u[0-9]{6}$', 1, 0))  AS user_id_invalides,
+SUM(IF(content_id IS NULL OR NOT content_id RLIKE '^c[0-9]{5}$', 1, 0))  AS content_id_invalides,
+SUM(IF(watch_seconds IS NULL, 1, 0))                                      AS duree_nulle_non_numerique,
+SUM(IF(watch_seconds < 0, 1, 0))                                          AS duree_negative,
+SUM(IF(watch_seconds > 86400, 1, 0))                                      AS duree_sup_24h,
+SUM(IF(event_ts IS NULL, 1, 0))                                           AS horodatage_invalide,
+SUM(IF(event_type NOT IN ('lecture','pause','recherche','abandon','ajout_favori'), 1, 0)) AS type_hors_domaine,
+MIN(watch_seconds)                                                        AS duree_min,
+MAX(watch_seconds)                                                        AS duree_max,
+MIN(event_ts)                                                             AS premier_evenement,
+MAX(event_ts)                                                             AS dernier_evenement
+FROM evenements_massifs
+WARN  : Hive-on-MR is deprecated in Hive 2 and may not be available in the future versions. Consider using a different execution engine (i.e. tez) or using Hive 1.X releases.
+INFO  : Query ID = root_20261024022849_466ea2ac-dc7d-42c3-b47d-dddcb852ef2c
+INFO  : Total jobs = 1
+INFO  : Launching Job 1 out of 1
+INFO  : Starting task [Stage-1:MAPRED] in serial mode
+INFO  : Number of reduce tasks determined at compile time: 1
+INFO  : In order to change the average load for a reducer (in bytes):
+INFO  :   set hive.exec.reducers.bytes.per.reducer=<number>
+INFO  : In order to limit the maximum number of reducers:
+INFO  :   set hive.exec.reducers.max=<number>
+INFO  : In order to set a constant number of reducers:
+INFO  :   set mapreduce.job.reduces=<number>
+INFO  : number of splits:8
+INFO  : Submitting tokens for job: job_1792541447442_0058
+INFO  : Executing with tokens: []
+INFO  : The url to track the job: http://resourcemanager:8088/proxy/application_1792541447442_0058/
+INFO  : Starting Job = job_1792541447442_0058, Tracking URL = http://resourcemanager:8088/proxy/application_1792541447442_0058/
+INFO  : Kill Command = /opt/hadoop/bin/mapred job  -kill job_1792541447442_0058
+INFO  : Hadoop job information for Stage-1: number of mappers: 8; number of reducers: 1
+INFO  : 2026-10-24 02:29:00,920 Stage-1 map = 0%,  reduce = 0%
+INFO  : 2026-10-24 02:29:08,292 Stage-1 map = 13%,  reduce = 0%, Cumulative CPU 8.8 sec
+INFO  : 2026-10-24 02:29:15,525 Stage-1 map = 25%,  reduce = 0%, Cumulative CPU 17.8 sec
+INFO  : 2026-10-24 02:29:21,712 Stage-1 map = 38%,  reduce = 0%, Cumulative CPU 26.43 sec
+INFO  : 2026-10-24 02:29:28,938 Stage-1 map = 50%,  reduce = 0%, Cumulative CPU 35.11 sec
+INFO  : 2026-10-24 02:29:36,198 Stage-1 map = 63%,  reduce = 0%, Cumulative CPU 43.89 sec
+INFO  : 2026-10-24 02:29:43,420 Stage-1 map = 75%,  reduce = 0%, Cumulative CPU 52.52 sec
+INFO  : 2026-10-24 02:29:50,639 Stage-1 map = 88%,  reduce = 0%, Cumulative CPU 61.05 sec
+INFO  : 2026-10-24 02:29:56,812 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 68.54 sec
+INFO  : 2026-10-24 02:30:05,059 Stage-1 map = 100%,  reduce = 100%, Cumulative CPU 75.53 sec
+INFO  : MapReduce Total cumulative CPU time: 1 minutes 15 seconds 530 msec
+INFO  : Ended Job = job_1792541447442_0058
+INFO  : MapReduce Jobs Launched: 
+INFO  : Stage-Stage-1: Map: 8  Reduce: 1   Cumulative CPU: 75.53 sec   HDFS Read: 24669143 HDFS Write: 184 HDFS EC Read: 0 SUCCESS
+INFO  : Total MapReduce CPU Time Spent: 1 minutes 15 seconds 530 msec
+INFO  : Completed executing command(queryId=root_20261024022849_466ea2ac-dc7d-42c3-b47d-dddcb852ef2c); Time taken: 76.361 seconds
+1 row selected (76.498 seconds)
+0: jdbc:hive2://hive:10000/default> 
+0: jdbc:hive2://hive:10000/default> -- A1.5 Integrite referentielle : evenements dont le contenu est absent du catalogue
+0: jdbc:hive2://hive:10000/default> SELECT COUNT(*) AS evenements_orphelins
+. . . . . . . . . . . . . . . . . > FROM evenements_massifs e
+. . . . . . . . . . . . . . . . . > LEFT JOIN catalogue_contenus c ON e.content_id = c.content_id
+. . . . . . . . . . . . . . . . . > WHERE c.content_id IS NULL;
+INFO  : Compiling command(queryId=root_20261024023006_a90abc69-5602-4fb3-8557-7c1f0a7a9fcf): SELECT COUNT(*) AS evenements_orphelins
+FROM evenements_massifs e
+LEFT JOIN catalogue_contenus c ON e.content_id = c.content_id
+WHERE c.content_id IS NULL
+INFO  : No Stats for inf6303_devoir1@evenements_massifs, Columns: content_id
+INFO  : No Stats for inf6303_devoir1@catalogue_contenus, Columns: content_id
+INFO  : Semantic Analysis Completed (retrial = false)
+INFO  : Created Hive schema: Schema(fieldSchemas:[FieldSchema(name:evenements_orphelins, type:bigint, comment:null)], properties:null)
+INFO  : Completed compiling command(queryId=root_20261024023006_a90abc69-5602-4fb3-8557-7c1f0a7a9fcf); Time taken: 0.242 seconds
+INFO  : Concurrency mode is disabled, not creating a lock manager
+INFO  : Executing command(queryId=root_20261024023006_a90abc69-5602-4fb3-8557-7c1f0a7a9fcf): SELECT COUNT(*) AS evenements_orphelins
+FROM evenements_massifs e
+LEFT JOIN catalogue_contenus c ON e.content_id = c.content_id
+WHERE c.content_id IS NULL
+WARN  : Hive-on-MR is deprecated in Hive 2 and may not be available in the future versions. Consider using a different execution engine (i.e. tez) or using Hive 1.X releases.
+INFO  : Query ID = root_20261024023006_a90abc69-5602-4fb3-8557-7c1f0a7a9fcf
+INFO  : Total jobs = 1
+INFO  : Starting task [Stage-5:MAPREDLOCAL] in serial mode
+INFO  : 2026-10-24 02:30:06	Starting to launch local task to process map join;	maximum memory = 954728448
+INFO  : 2026-10-24 02:30:06	End of local task; Time Taken: 0.008 sec.
+INFO  : Launching Job 1 out of 1
+INFO  : Starting task [Stage-2:MAPRED] in serial mode
+INFO  : Number of reduce tasks determined at compile time: 1
+INFO  : In order to change the average load for a reducer (in bytes):
+INFO  :   set hive.exec.reducers.bytes.per.reducer=<number>
+INFO  : In order to limit the maximum number of reducers:
+INFO  :   set hive.exec.reducers.max=<number>
+INFO  : In order to set a constant number of reducers:
+INFO  :   set mapreduce.job.reduces=<number>
+INFO  : number of splits:8
+INFO  : Submitting tokens for job: job_1792541447442_0059
+INFO  : Executing with tokens: []
+INFO  : The url to track the job: http://resourcemanager:8088/proxy/application_1792541447442_0059/
+INFO  : Starting Job = job_1792541447442_0059, Tracking URL = http://resourcemanager:8088/proxy/application_1792541447442_0059/
+INFO  : Kill Command = /opt/hadoop/bin/mapred job  -kill job_1792541447442_0059
+INFO  : Hadoop job information for Stage-2: number of mappers: 8; number of reducers: 1
+INFO  : 2026-10-24 02:30:18,681 Stage-2 map = 0%,  reduce = 0%
+INFO  : 2026-10-24 02:30:25,904 Stage-2 map = 13%,  reduce = 0%, Cumulative CPU 3.97 sec
+INFO  : 2026-10-24 02:30:33,131 Stage-2 map = 25%,  reduce = 0%, Cumulative CPU 8.11 sec
+INFO  : 2026-10-24 02:30:39,324 Stage-2 map = 38%,  reduce = 0%, Cumulative CPU 12.06 sec
+INFO  : 2026-10-24 02:30:44,475 Stage-2 map = 50%,  reduce = 0%, Cumulative CPU 16.14 sec
+INFO  : 2026-10-24 02:30:50,655 Stage-2 map = 63%,  reduce = 0%, Cumulative CPU 19.97 sec
+INFO  : 2026-10-24 02:30:56,840 Stage-2 map = 75%,  reduce = 0%, Cumulative CPU 23.93 sec
+INFO  : 2026-10-24 02:31:03,023 Stage-2 map = 88%,  reduce = 0%, Cumulative CPU 27.83 sec
+INFO  : 2026-10-24 02:31:09,213 Stage-2 map = 100%,  reduce = 0%, Cumulative CPU 31.85 sec
+INFO  : 2026-10-24 02:31:12,378 Stage-2 map = 100%,  reduce = 100%, Cumulative CPU 33.74 sec
+INFO  : MapReduce Total cumulative CPU time: 33 seconds 740 msec
+INFO  : Ended Job = job_1792541447442_0059
+INFO  : MapReduce Jobs Launched: 
+INFO  : Stage-Stage-2: Map: 8  Reduce: 1   Cumulative CPU: 33.74 sec   HDFS Read: 24623788 HDFS Write: 101 HDFS EC Read: 0 SUCCESS
+INFO  : Total MapReduce CPU Time Spent: 33 seconds 740 msec
+INFO  : Completed executing command(queryId=root_20261024023006_a90abc69-5602-4fb3-8557-7c1f0a7a9fcf); Time taken: 67.924 seconds
+1 row selected (68.183 seconds)
+0: jdbc:hive2://hive:10000/default> 
+0: jdbc:hive2://hive:10000/default> -- A1.6 Qualite du catalogue
+0: jdbc:hive2://hive:10000/default> SELECT
+. . . . . . . . . . . . . . . . . >   COUNT(*)                                                                  AS nb_contenus,
+. . . . . . . . . . . . . . . . . >   COUNT(DISTINCT content_id)                                                AS content_id_distincts,
+. . . . . . . . . . . . . . . . . >   SUM(IF(content_id IS NULL OR NOT content_id RLIKE '^c[0-9]{5}$', 1, 0))  AS content_id_invalides,
+. . . . . . . . . . . . . . . . . >   SUM(IF(duration_sec IS NULL OR duration_sec <= 0, 1, 0))                  AS duree_catalogue_invalide,
+. . . . . . . . . . . . . . . . . >   MIN(release_year)                                                         AS annee_min,
+. . . . . . . . . . . . . . . . . >   MAX(release_year)                                                         AS annee_max
+. . . . . . . . . . . . . . . . . > FROM catalogue_contenus;
+INFO  : Compiling command(queryId=root_20261024023114_a36ae030-6e0b-4b5c-acbf-f1bfeb09d9c7): SELECT
+COUNT(*)                                                                  AS nb_contenus,
+COUNT(DISTINCT content_id)                                                AS content_id_distincts,
+SUM(IF(content_id IS NULL OR NOT content_id RLIKE '^c[0-9]{5}$', 1, 0))  AS content_id_invalides,
+SUM(IF(duration_sec IS NULL OR duration_sec <= 0, 1, 0))                  AS duree_catalogue_invalide,
+MIN(release_year)                                                         AS annee_min,
+MAX(release_year)                                                         AS annee_max
+FROM catalogue_contenus
+INFO  : No Stats for inf6303_devoir1@catalogue_contenus, Columns: content_id, release_year, duration_sec
+INFO  : Semantic Analysis Completed (retrial = false)
+INFO  : Created Hive schema: Schema(fieldSchemas:[FieldSchema(name:nb_contenus, type:bigint, comment:null), FieldSchema(name:content_id_distincts, type:bigint, comment:null), FieldSchema(name:content_id_invalides, type:bigint, comment:null), FieldSchema(name:duree_catalogue_invalide, type:bigint, comment:null), FieldSchema(name:annee_min, type:int, comment:null), FieldSchema(name:annee_max, type:int, comment:null)], properties:null)
+INFO  : Completed compiling command(queryId=root_20261024023114_a36ae030-6e0b-4b5c-acbf-f1bfeb09d9c7); Time taken: 0.098 seconds
+INFO  : Concurrency mode is disabled, not creating a lock manager
+INFO  : Executing command(queryId=root_20261024023114_a36ae030-6e0b-4b5c-acbf-f1bfeb09d9c7): SELECT
+COUNT(*)                                                                  AS nb_contenus,
+COUNT(DISTINCT content_id)                                                AS content_id_distincts,
+SUM(IF(content_id IS NULL OR NOT content_id RLIKE '^c[0-9]{5}$', 1, 0))  AS content_id_invalides,
+SUM(IF(duration_sec IS NULL OR duration_sec <= 0, 1, 0))                  AS duree_catalogue_invalide,
+MIN(release_year)                                                         AS annee_min,
+MAX(release_year)                                                         AS annee_max
+FROM catalogue_contenus
+WARN  : Hive-on-MR is deprecated in Hive 2 and may not be available in the future versions. Consider using a different execution engine (i.e. tez) or using Hive 1.X releases.
+INFO  : Query ID = root_20261024023114_a36ae030-6e0b-4b5c-acbf-f1bfeb09d9c7
+INFO  : Total jobs = 1
+INFO  : Launching Job 1 out of 1
+INFO  : Starting task [Stage-1:MAPRED] in serial mode
+INFO  : Number of reduce tasks determined at compile time: 1
+INFO  : In order to change the average load for a reducer (in bytes):
+INFO  :   set hive.exec.reducers.bytes.per.reducer=<number>
+INFO  : In order to limit the maximum number of reducers:
+INFO  :   set hive.exec.reducers.max=<number>
+INFO  : In order to set a constant number of reducers:
+INFO  :   set mapreduce.job.reduces=<number>
+INFO  : number of splits:2
+INFO  : Submitting tokens for job: job_1792541447442_0060
+INFO  : Executing with tokens: []
+INFO  : The url to track the job: http://resourcemanager:8088/proxy/application_1792541447442_0060/
+INFO  : Starting Job = job_1792541447442_0060, Tracking URL = http://resourcemanager:8088/proxy/application_1792541447442_0060/
+INFO  : Kill Command = /opt/hadoop/bin/mapred job  -kill job_1792541447442_0060
+INFO  : Hadoop job information for Stage-1: number of mappers: 2; number of reducers: 1
+INFO  : 2026-10-24 02:31:26,074 Stage-1 map = 0%,  reduce = 0%
+INFO  : 2026-10-24 02:31:32,283 Stage-1 map = 50%,  reduce = 0%, Cumulative CPU 3.33 sec
+INFO  : 2026-10-24 02:31:37,444 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 6.79 sec
+INFO  : 2026-10-24 02:31:41,565 Stage-1 map = 100%,  reduce = 100%, Cumulative CPU 8.99 sec
+INFO  : MapReduce Total cumulative CPU time: 8 seconds 990 msec
+INFO  : Ended Job = job_1792541447442_0060
+INFO  : MapReduce Jobs Launched: 
+INFO  : Stage-Stage-1: Map: 2  Reduce: 1   Cumulative CPU: 8.99 sec   HDFS Read: 123115 HDFS Write: 123 HDFS EC Read: 0 SUCCESS
+INFO  : Total MapReduce CPU Time Spent: 8 seconds 990 msec
+INFO  : Completed executing command(queryId=root_20261024023114_a36ae030-6e0b-4b5c-acbf-f1bfeb09d9c7); Time taken: 27.705 seconds
+1 row selected (27.821 seconds)
+0: jdbc:hive2://hive:10000/default> 
+0: jdbc:hive2://hive:10000/default> -- =====================================================================
+0: jdbc:hive2://hive:10000/default> -- A2. ANALYSE DISTRIBUEE
+0: jdbc:hive2://hive:10000/default> -- =====================================================================
+0: jdbc:hive2://hive:10000/default> 
+0: jdbc:hive2://hive:10000/default> -- A2.1 Repartition des evenements par pays
+0: jdbc:hive2://hive:10000/default> SELECT country, COUNT(*) AS nb_evenements
+. . . . . . . . . . . . . . . . . > FROM evenements_massifs
+. . . . . . . . . . . . . . . . . > GROUP BY country
+. . . . . . . . . . . . . . . . . > ORDER BY nb_evenements DESC;
+INFO  : Compiling command(queryId=root_20261024023142_a5feab55-500f-41e3-bcc5-605a06ad1ec5): SELECT country, COUNT(*) AS nb_evenements
+FROM evenements_massifs
+GROUP BY country
+ORDER BY nb_evenements DESC
+INFO  : No Stats for inf6303_devoir1@evenements_massifs, Columns: country
+INFO  : Semantic Analysis Completed (retrial = false)
+INFO  : Created Hive schema: Schema(fieldSchemas:[FieldSchema(name:country, type:string, comment:null), FieldSchema(name:nb_evenements, type:bigint, comment:null)], properties:null)
+INFO  : Completed compiling command(queryId=root_20261024023142_a5feab55-500f-41e3-bcc5-605a06ad1ec5); Time taken: 0.103 seconds
+INFO  : Concurrency mode is disabled, not creating a lock manager
+INFO  : Executing command(queryId=root_20261024023142_a5feab55-500f-41e3-bcc5-605a06ad1ec5): SELECT country, COUNT(*) AS nb_evenements
+FROM evenements_massifs
+GROUP BY country
+ORDER BY nb_evenements DESC
+WARN  : Hive-on-MR is deprecated in Hive 2 and may not be available in the future versions. Consider using a different execution engine (i.e. tez) or using Hive 1.X releases.
+INFO  : Query ID = root_20261024023142_a5feab55-500f-41e3-bcc5-605a06ad1ec5
+INFO  : Total jobs = 2
+INFO  : Launching Job 1 out of 2
+INFO  : Starting task [Stage-1:MAPRED] in serial mode
+INFO  : Number of reduce tasks not specified. Estimated from input data size: 1
+INFO  : In order to change the average load for a reducer (in bytes):
+INFO  :   set hive.exec.reducers.bytes.per.reducer=<number>
+INFO  : In order to limit the maximum number of reducers:
+INFO  :   set hive.exec.reducers.max=<number>
+INFO  : In order to set a constant number of reducers:
+INFO  :   set mapreduce.job.reduces=<number>
+INFO  : number of splits:8
+INFO  : Submitting tokens for job: job_1792541447442_0061
+INFO  : Executing with tokens: []
+INFO  : The url to track the job: http://resourcemanager:8088/proxy/application_1792541447442_0061/
+INFO  : Starting Job = job_1792541447442_0061, Tracking URL = http://resourcemanager:8088/proxy/application_1792541447442_0061/
+INFO  : Kill Command = /opt/hadoop/bin/mapred job  -kill job_1792541447442_0061
+INFO  : Hadoop job information for Stage-1: number of mappers: 8; number of reducers: 1
+INFO  : 2026-10-24 02:31:54,739 Stage-1 map = 0%,  reduce = 0%
+INFO  : 2026-10-24 02:32:00,973 Stage-1 map = 13%,  reduce = 0%, Cumulative CPU 2.66 sec
+INFO  : 2026-10-24 02:32:06,130 Stage-1 map = 25%,  reduce = 0%, Cumulative CPU 5.45 sec
+INFO  : 2026-10-24 02:32:11,290 Stage-1 map = 38%,  reduce = 0%, Cumulative CPU 8.26 sec
+INFO  : 2026-10-24 02:32:16,445 Stage-1 map = 50%,  reduce = 0%, Cumulative CPU 11.16 sec
+INFO  : 2026-10-24 02:32:21,599 Stage-1 map = 63%,  reduce = 0%, Cumulative CPU 13.82 sec
+INFO  : 2026-10-24 02:32:25,713 Stage-1 map = 75%,  reduce = 0%, Cumulative CPU 16.57 sec
+INFO  : 2026-10-24 02:32:30,866 Stage-1 map = 88%,  reduce = 0%, Cumulative CPU 19.31 sec
+INFO  : 2026-10-24 02:32:36,032 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 22.21 sec
+INFO  : 2026-10-24 02:32:40,153 Stage-1 map = 100%,  reduce = 100%, Cumulative CPU 23.99 sec
+INFO  : MapReduce Total cumulative CPU time: 23 seconds 990 msec
+INFO  : Ended Job = job_1792541447442_0061
+INFO  : Launching Job 2 out of 2
+INFO  : Starting task [Stage-2:MAPRED] in serial mode
+INFO  : Number of reduce tasks determined at compile time: 1
+INFO  : In order to change the average load for a reducer (in bytes):
+INFO  :   set hive.exec.reducers.bytes.per.reducer=<number>
+INFO  : In order to limit the maximum number of reducers:
+INFO  :   set hive.exec.reducers.max=<number>
+INFO  : In order to set a constant number of reducers:
+INFO  :   set mapreduce.job.reduces=<number>
+INFO  : number of splits:1
+INFO  : Submitting tokens for job: job_1792541447442_0062
+INFO  : Executing with tokens: []
+INFO  : The url to track the job: http://resourcemanager:8088/proxy/application_1792541447442_0062/
+INFO  : Starting Job = job_1792541447442_0062, Tracking URL = http://resourcemanager:8088/proxy/application_1792541447442_0062/
+INFO  : Kill Command = /opt/hadoop/bin/mapred job  -kill job_1792541447442_0062
+INFO  : Hadoop job information for Stage-2: number of mappers: 1; number of reducers: 1
+INFO  : 2026-10-24 02:32:53,402 Stage-2 map = 0%,  reduce = 0%
+INFO  : 2026-10-24 02:32:59,610 Stage-2 map = 100%,  reduce = 0%, Cumulative CPU 1.49 sec
+INFO  : 2026-10-24 02:33:05,791 Stage-2 map = 100%,  reduce = 100%, Cumulative CPU 3.12 sec
+INFO  : MapReduce Total cumulative CPU time: 3 seconds 120 msec
+INFO  : Ended Job = job_1792541447442_0062
+INFO  : MapReduce Jobs Launched: 
+INFO  : Stage-Stage-1: Map: 8  Reduce: 1   Cumulative CPU: 23.99 sec   HDFS Read: 24594456 HDFS Write: 331 HDFS EC Read: 0 SUCCESS
+INFO  : Stage-Stage-2: Map: 1  Reduce: 1   Cumulative CPU: 3.12 sec   HDFS Read: 9064 HDFS Write: 303 HDFS EC Read: 0 SUCCESS
+INFO  : Total MapReduce CPU Time Spent: 27 seconds 110 msec
+INFO  : Completed executing command(queryId=root_20261024023142_a5feab55-500f-41e3-bcc5-605a06ad1ec5); Time taken: 83.88 seconds
+8 rows selected (84.001 seconds)
+0: jdbc:hive2://hive:10000/default> 
+0: jdbc:hive2://hive:10000/default> -- A2.2 Repartition des evenements par type
+0: jdbc:hive2://hive:10000/default> SELECT event_type, COUNT(*) AS nb_evenements
+. . . . . . . . . . . . . . . . . > FROM evenements_massifs
+. . . . . . . . . . . . . . . . . > GROUP BY event_type
+. . . . . . . . . . . . . . . . . > ORDER BY nb_evenements DESC;
+INFO  : Compiling command(queryId=root_20261024023306_686ac31a-0de2-409a-b837-b96451bdd90d): SELECT event_type, COUNT(*) AS nb_evenements
+FROM evenements_massifs
+GROUP BY event_type
+ORDER BY nb_evenements DESC
+INFO  : No Stats for inf6303_devoir1@evenements_massifs, Columns: event_type
+INFO  : Semantic Analysis Completed (retrial = false)
+INFO  : Created Hive schema: Schema(fieldSchemas:[FieldSchema(name:event_type, type:string, comment:null), FieldSchema(name:nb_evenements, type:bigint, comment:null)], properties:null)
+INFO  : Completed compiling command(queryId=root_20261024023306_686ac31a-0de2-409a-b837-b96451bdd90d); Time taken: 0.107 seconds
+INFO  : Concurrency mode is disabled, not creating a lock manager
+INFO  : Executing command(queryId=root_20261024023306_686ac31a-0de2-409a-b837-b96451bdd90d): SELECT event_type, COUNT(*) AS nb_evenements
+FROM evenements_massifs
+GROUP BY event_type
+ORDER BY nb_evenements DESC
+WARN  : Hive-on-MR is deprecated in Hive 2 and may not be available in the future versions. Consider using a different execution engine (i.e. tez) or using Hive 1.X releases.
+INFO  : Query ID = root_20261024023306_686ac31a-0de2-409a-b837-b96451bdd90d
+INFO  : Total jobs = 2
+INFO  : Launching Job 1 out of 2
+INFO  : Starting task [Stage-1:MAPRED] in serial mode
+INFO  : Number of reduce tasks not specified. Estimated from input data size: 1
+INFO  : In order to change the average load for a reducer (in bytes):
+INFO  :   set hive.exec.reducers.bytes.per.reducer=<number>
+INFO  : In order to limit the maximum number of reducers:
+INFO  :   set hive.exec.reducers.max=<number>
+INFO  : In order to set a constant number of reducers:
+INFO  :   set mapreduce.job.reduces=<number>
+INFO  : number of splits:8
+INFO  : Submitting tokens for job: job_1792541447442_0063
+INFO  : Executing with tokens: []
+INFO  : The url to track the job: http://resourcemanager:8088/proxy/application_1792541447442_0063/
+INFO  : Starting Job = job_1792541447442_0063, Tracking URL = http://resourcemanager:8088/proxy/application_1792541447442_0063/
+INFO  : Kill Command = /opt/hadoop/bin/mapred job  -kill job_1792541447442_0063
+INFO  : Hadoop job information for Stage-1: number of mappers: 8; number of reducers: 1
+INFO  : 2026-10-24 02:33:18,626 Stage-1 map = 0%,  reduce = 0%
+INFO  : 2026-10-24 02:33:24,833 Stage-1 map = 13%,  reduce = 0%, Cumulative CPU 2.6 sec
+INFO  : 2026-10-24 02:33:29,986 Stage-1 map = 25%,  reduce = 0%, Cumulative CPU 5.17 sec
+INFO  : 2026-10-24 02:33:35,134 Stage-1 map = 38%,  reduce = 0%, Cumulative CPU 9.46 sec
+INFO  : 2026-10-24 02:33:40,291 Stage-1 map = 50%,  reduce = 0%, Cumulative CPU 12.06 sec
+INFO  : 2026-10-24 02:33:45,459 Stage-1 map = 63%,  reduce = 0%, Cumulative CPU 14.68 sec
+INFO  : 2026-10-24 02:33:49,578 Stage-1 map = 75%,  reduce = 0%, Cumulative CPU 17.54 sec
+INFO  : 2026-10-24 02:33:54,731 Stage-1 map = 88%,  reduce = 0%, Cumulative CPU 20.2 sec
+INFO  : 2026-10-24 02:33:59,881 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 22.76 sec
+INFO  : 2026-10-24 02:34:04,006 Stage-1 map = 100%,  reduce = 100%, Cumulative CPU 24.58 sec
+INFO  : MapReduce Total cumulative CPU time: 24 seconds 580 msec
+INFO  : Ended Job = job_1792541447442_0063
+INFO  : Launching Job 2 out of 2
+INFO  : Starting task [Stage-2:MAPRED] in serial mode
+INFO  : Number of reduce tasks determined at compile time: 1
+INFO  : In order to change the average load for a reducer (in bytes):
+INFO  :   set hive.exec.reducers.bytes.per.reducer=<number>
+INFO  : In order to limit the maximum number of reducers:
+INFO  :   set hive.exec.reducers.max=<number>
+INFO  : In order to set a constant number of reducers:
+INFO  :   set mapreduce.job.reduces=<number>
+INFO  : number of splits:1
+INFO  : Submitting tokens for job: job_1792541447442_0064
+INFO  : Executing with tokens: []
+INFO  : The url to track the job: http://resourcemanager:8088/proxy/application_1792541447442_0064/
+INFO  : Starting Job = job_1792541447442_0064, Tracking URL = http://resourcemanager:8088/proxy/application_1792541447442_0064/
+INFO  : Kill Command = /opt/hadoop/bin/mapred job  -kill job_1792541447442_0064
+INFO  : Hadoop job information for Stage-2: number of mappers: 1; number of reducers: 1
+INFO  : 2026-10-24 02:34:17,016 Stage-2 map = 0%,  reduce = 0%
+INFO  : 2026-10-24 02:34:23,222 Stage-2 map = 100%,  reduce = 0%, Cumulative CPU 1.52 sec
+INFO  : 2026-10-24 02:34:29,412 Stage-2 map = 100%,  reduce = 100%, Cumulative CPU 3.21 sec
+INFO  : MapReduce Total cumulative CPU time: 3 seconds 210 msec
+INFO  : Ended Job = job_1792541447442_0064
+INFO  : MapReduce Jobs Launched: 
+INFO  : Stage-Stage-1: Map: 8  Reduce: 1   Cumulative CPU: 24.58 sec   HDFS Read: 24594459 HDFS Write: 246 HDFS EC Read: 0 SUCCESS
+INFO  : Stage-Stage-2: Map: 1  Reduce: 1   Cumulative CPU: 3.21 sec   HDFS Read: 8994 HDFS Write: 226 HDFS EC Read: 0 SUCCESS
+INFO  : Total MapReduce CPU Time Spent: 27 seconds 790 msec
+INFO  : Completed executing command(queryId=root_20261024023306_686ac31a-0de2-409a-b837-b96451bdd90d); Time taken: 83.381 seconds
+5 rows selected (83.505 seconds)
+0: jdbc:hive2://hive:10000/default> 
+0: jdbc:hive2://hive:10000/default> -- A2.3 Croisement pays x type (tableau pivot, 1 seul passage)
+0: jdbc:hive2://hive:10000/default> SELECT country,
+. . . . . . . . . . . . . . . . . >        SUM(IF(event_type = 'lecture',      1, 0)) AS lecture,
+. . . . . . . . . . . . . . . . . >        SUM(IF(event_type = 'pause',        1, 0)) AS pause,
+. . . . . . . . . . . . . . . . . >        SUM(IF(event_type = 'recherche',    1, 0)) AS recherche,
+. . . . . . . . . . . . . . . . . >        SUM(IF(event_type = 'abandon',      1, 0)) AS abandon,
+. . . . . . . . . . . . . . . . . >        SUM(IF(event_type = 'ajout_favori', 1, 0)) AS ajout_favori,
+. . . . . . . . . . . . . . . . . >        COUNT(*)                                   AS total
+. . . . . . . . . . . . . . . . . > FROM evenements_massifs
+. . . . . . . . . . . . . . . . . > GROUP BY country
+. . . . . . . . . . . . . . . . . > ORDER BY total DESC;
+INFO  : Compiling command(queryId=root_20261024023430_1aa91696-ed80-4140-9a96-6e3278d50b8d): SELECT country,
+SUM(IF(event_type = 'lecture',      1, 0)) AS lecture,
+SUM(IF(event_type = 'pause',        1, 0)) AS pause,
+SUM(IF(event_type = 'recherche',    1, 0)) AS recherche,
+SUM(IF(event_type = 'abandon',      1, 0)) AS abandon,
+SUM(IF(event_type = 'ajout_favori', 1, 0)) AS ajout_favori,
+COUNT(*)                                   AS total
+FROM evenements_massifs
+GROUP BY country
+ORDER BY total DESC
+INFO  : No Stats for inf6303_devoir1@evenements_massifs, Columns: country, event_type
+INFO  : Semantic Analysis Completed (retrial = false)
+INFO  : Created Hive schema: Schema(fieldSchemas:[FieldSchema(name:country, type:string, comment:null), FieldSchema(name:lecture, type:bigint, comment:null), FieldSchema(name:pause, type:bigint, comment:null), FieldSchema(name:recherche, type:bigint, comment:null), FieldSchema(name:abandon, type:bigint, comment:null), FieldSchema(name:ajout_favori, type:bigint, comment:null), FieldSchema(name:total, type:bigint, comment:null)], properties:null)
+INFO  : Completed compiling command(queryId=root_20261024023430_1aa91696-ed80-4140-9a96-6e3278d50b8d); Time taken: 0.123 seconds
+INFO  : Concurrency mode is disabled, not creating a lock manager
+INFO  : Executing command(queryId=root_20261024023430_1aa91696-ed80-4140-9a96-6e3278d50b8d): SELECT country,
+SUM(IF(event_type = 'lecture',      1, 0)) AS lecture,
+SUM(IF(event_type = 'pause',        1, 0)) AS pause,
+SUM(IF(event_type = 'recherche',    1, 0)) AS recherche,
+SUM(IF(event_type = 'abandon',      1, 0)) AS abandon,
+SUM(IF(event_type = 'ajout_favori', 1, 0)) AS ajout_favori,
+COUNT(*)                                   AS total
+FROM evenements_massifs
+GROUP BY country
+ORDER BY total DESC
+WARN  : Hive-on-MR is deprecated in Hive 2 and may not be available in the future versions. Consider using a different execution engine (i.e. tez) or using Hive 1.X releases.
+INFO  : Query ID = root_20261024023430_1aa91696-ed80-4140-9a96-6e3278d50b8d
+INFO  : Total jobs = 2
+INFO  : Launching Job 1 out of 2
+INFO  : Starting task [Stage-1:MAPRED] in serial mode
+INFO  : Number of reduce tasks not specified. Estimated from input data size: 1
+INFO  : In order to change the average load for a reducer (in bytes):
+INFO  :   set hive.exec.reducers.bytes.per.reducer=<number>
+INFO  : In order to limit the maximum number of reducers:
+INFO  :   set hive.exec.reducers.max=<number>
+INFO  : In order to set a constant number of reducers:
+INFO  :   set mapreduce.job.reduces=<number>
+INFO  : number of splits:8
+INFO  : Submitting tokens for job: job_1792541447442_0065
+INFO  : Executing with tokens: []
+INFO  : The url to track the job: http://resourcemanager:8088/proxy/application_1792541447442_0065/
+INFO  : Starting Job = job_1792541447442_0065, Tracking URL = http://resourcemanager:8088/proxy/application_1792541447442_0065/
+INFO  : Kill Command = /opt/hadoop/bin/mapred job  -kill job_1792541447442_0065
+INFO  : Hadoop job information for Stage-1: number of mappers: 8; number of reducers: 1
+INFO  : 2026-10-24 02:34:42,442 Stage-1 map = 0%,  reduce = 0%
+INFO  : 2026-10-24 02:34:49,688 Stage-1 map = 13%,  reduce = 0%, Cumulative CPU 4.13 sec
+INFO  : 2026-10-24 02:34:54,841 Stage-1 map = 25%,  reduce = 0%, Cumulative CPU 8.16 sec
+INFO  : 2026-10-24 02:35:00,004 Stage-1 map = 38%,  reduce = 0%, Cumulative CPU 12.22 sec
+INFO  : 2026-10-24 02:35:05,159 Stage-1 map = 50%,  reduce = 0%, Cumulative CPU 16.31 sec
+INFO  : 2026-10-24 02:35:11,343 Stage-1 map = 63%,  reduce = 0%, Cumulative CPU 20.46 sec
+INFO  : 2026-10-24 02:35:17,601 Stage-1 map = 75%,  reduce = 0%, Cumulative CPU 23.6 sec
+INFO  : 2026-10-24 02:35:22,778 Stage-1 map = 88%,  reduce = 0%, Cumulative CPU 27.65 sec
+INFO  : 2026-10-24 02:35:26,897 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 31.51 sec
+INFO  : 2026-10-24 02:35:31,025 Stage-1 map = 100%,  reduce = 100%, Cumulative CPU 33.36 sec
+INFO  : MapReduce Total cumulative CPU time: 33 seconds 360 msec
+INFO  : Ended Job = job_1792541447442_0065
+INFO  : Launching Job 2 out of 2
+INFO  : Starting task [Stage-2:MAPRED] in serial mode
+INFO  : Number of reduce tasks determined at compile time: 1
+INFO  : In order to change the average load for a reducer (in bytes):
+INFO  :   set hive.exec.reducers.bytes.per.reducer=<number>
+INFO  : In order to limit the maximum number of reducers:
+INFO  :   set hive.exec.reducers.max=<number>
+INFO  : In order to set a constant number of reducers:
+INFO  :   set mapreduce.job.reduces=<number>
+INFO  : number of splits:1
+INFO  : Submitting tokens for job: job_1792541447442_0066
+INFO  : Executing with tokens: []
+INFO  : The url to track the job: http://resourcemanager:8088/proxy/application_1792541447442_0066/
+INFO  : Starting Job = job_1792541447442_0066, Tracking URL = http://resourcemanager:8088/proxy/application_1792541447442_0066/
+INFO  : Kill Command = /opt/hadoop/bin/mapred job  -kill job_1792541447442_0066
+INFO  : Hadoop job information for Stage-2: number of mappers: 1; number of reducers: 1
+INFO  : 2026-10-24 02:35:44,061 Stage-2 map = 0%,  reduce = 0%
+INFO  : 2026-10-24 02:35:50,250 Stage-2 map = 100%,  reduce = 0%, Cumulative CPU 1.52 sec
+INFO  : 2026-10-24 02:35:56,474 Stage-2 map = 100%,  reduce = 100%, Cumulative CPU 3.25 sec
+INFO  : MapReduce Total cumulative CPU time: 3 seconds 250 msec
+INFO  : Ended Job = job_1792541447442_0066
+INFO  : MapReduce Jobs Launched: 
+INFO  : Stage-Stage-1: Map: 8  Reduce: 1   Cumulative CPU: 33.36 sec   HDFS Read: 24619840 HDFS Write: 454 HDFS EC Read: 0 SUCCESS
+INFO  : Stage-Stage-2: Map: 1  Reduce: 1   Cumulative CPU: 3.25 sec   HDFS Read: 11449 HDFS Write: 531 HDFS EC Read: 0 SUCCESS
+INFO  : Total MapReduce CPU Time Spent: 36 seconds 610 msec
+INFO  : Completed executing command(queryId=root_20261024023430_1aa91696-ed80-4140-9a96-6e3278d50b8d); Time taken: 86.612 seconds
+8 rows selected (86.754 seconds)
+0: jdbc:hive2://hive:10000/default> 
+0: jdbc:hive2://hive:10000/default> -- A2.4 Top 10 des contenus selon la duree totale (jointure avec le catalogue)
+0: jdbc:hive2://hive:10000/default> SELECT e.content_id, c.title, c.genre,
+. . . . . . . . . . . . . . . . . >        SUM(e.watch_seconds) AS total_watch_sec,
+. . . . . . . . . . . . . . . . . >        COUNT(*)             AS nb_evenements
+. . . . . . . . . . . . . . . . . > FROM evenements_massifs e
+. . . . . . . . . . . . . . . . . > JOIN catalogue_contenus c ON e.content_id = c.content_id
+. . . . . . . . . . . . . . . . . > GROUP BY e.content_id, c.title, c.genre
+. . . . . . . . . . . . . . . . . > ORDER BY total_watch_sec DESC
+. . . . . . . . . . . . . . . . . > LIMIT 10;
+INFO  : Compiling command(queryId=root_20261024023557_4bfe201b-6479-4ce2-8271-aef94acc9774): SELECT e.content_id, c.title, c.genre,
+SUM(e.watch_seconds) AS total_watch_sec,
+COUNT(*)             AS nb_evenements
+FROM evenements_massifs e
+JOIN catalogue_contenus c ON e.content_id = c.content_id
+GROUP BY e.content_id, c.title, c.genre
+ORDER BY total_watch_sec DESC
+LIMIT 10
+INFO  : No Stats for inf6303_devoir1@evenements_massifs, Columns: content_id, watch_seconds
+INFO  : No Stats for inf6303_devoir1@catalogue_contenus, Columns: content_id, genre, title
+INFO  : Semantic Analysis Completed (retrial = false)
+INFO  : Created Hive schema: Schema(fieldSchemas:[FieldSchema(name:e.content_id, type:string, comment:null), FieldSchema(name:c.title, type:string, comment:null), FieldSchema(name:c.genre, type:string, comment:null), FieldSchema(name:total_watch_sec, type:bigint, comment:null), FieldSchema(name:nb_evenements, type:bigint, comment:null)], properties:null)
+INFO  : Completed compiling command(queryId=root_20261024023557_4bfe201b-6479-4ce2-8271-aef94acc9774); Time taken: 0.283 seconds
+INFO  : Concurrency mode is disabled, not creating a lock manager
+INFO  : Executing command(queryId=root_20261024023557_4bfe201b-6479-4ce2-8271-aef94acc9774): SELECT e.content_id, c.title, c.genre,
+SUM(e.watch_seconds) AS total_watch_sec,
+COUNT(*)             AS nb_evenements
+FROM evenements_massifs e
+JOIN catalogue_contenus c ON e.content_id = c.content_id
+GROUP BY e.content_id, c.title, c.genre
+ORDER BY total_watch_sec DESC
+LIMIT 10
+WARN  : Hive-on-MR is deprecated in Hive 2 and may not be available in the future versions. Consider using a different execution engine (i.e. tez) or using Hive 1.X releases.
+INFO  : Query ID = root_20261024023557_4bfe201b-6479-4ce2-8271-aef94acc9774
+INFO  : Total jobs = 2
+INFO  : Starting task [Stage-6:MAPREDLOCAL] in serial mode
+INFO  : 2026-10-24 02:35:58	Starting to launch local task to process map join;	maximum memory = 954728448
+INFO  : 2026-10-24 02:35:58	End of local task; Time Taken: 0.009 sec.
+INFO  : Launching Job 1 out of 2
+INFO  : Starting task [Stage-2:MAPRED] in serial mode
+INFO  : Number of reduce tasks not specified. Estimated from input data size: 1
+INFO  : In order to change the average load for a reducer (in bytes):
+INFO  :   set hive.exec.reducers.bytes.per.reducer=<number>
+INFO  : In order to limit the maximum number of reducers:
+INFO  :   set hive.exec.reducers.max=<number>
+INFO  : In order to set a constant number of reducers:
+INFO  :   set mapreduce.job.reduces=<number>
+INFO  : number of splits:8
+INFO  : Submitting tokens for job: job_1792541447442_0067
+INFO  : Executing with tokens: []
+INFO  : The url to track the job: http://resourcemanager:8088/proxy/application_1792541447442_0067/
+INFO  : Starting Job = job_1792541447442_0067, Tracking URL = http://resourcemanager:8088/proxy/application_1792541447442_0067/
+INFO  : Kill Command = /opt/hadoop/bin/mapred job  -kill job_1792541447442_0067
+INFO  : Hadoop job information for Stage-2: number of mappers: 8; number of reducers: 1
+INFO  : 2026-10-24 02:36:09,623 Stage-2 map = 0%,  reduce = 0%
+INFO  : 2026-10-24 02:36:17,927 Stage-2 map = 13%,  reduce = 0%, Cumulative CPU 4.31 sec
+INFO  : 2026-10-24 02:36:24,112 Stage-2 map = 25%,  reduce = 0%, Cumulative CPU 8.52 sec
+INFO  : 2026-10-24 02:36:30,305 Stage-2 map = 38%,  reduce = 0%, Cumulative CPU 12.82 sec
+INFO  : 2026-10-24 02:36:36,492 Stage-2 map = 50%,  reduce = 0%, Cumulative CPU 17.04 sec
+INFO  : 2026-10-24 02:36:43,699 Stage-2 map = 63%,  reduce = 0%, Cumulative CPU 21.29 sec
+INFO  : 2026-10-24 02:36:49,906 Stage-2 map = 75%,  reduce = 0%, Cumulative CPU 25.62 sec
+INFO  : 2026-10-24 02:36:55,046 Stage-2 map = 88%,  reduce = 0%, Cumulative CPU 29.89 sec
+INFO  : 2026-10-24 02:37:01,223 Stage-2 map = 100%,  reduce = 0%, Cumulative CPU 34.02 sec
+INFO  : 2026-10-24 02:37:05,342 Stage-2 map = 100%,  reduce = 100%, Cumulative CPU 37.01 sec
+INFO  : MapReduce Total cumulative CPU time: 37 seconds 10 msec
+INFO  : Ended Job = job_1792541447442_0067
+INFO  : Launching Job 2 out of 2
+INFO  : Starting task [Stage-3:MAPRED] in serial mode
+INFO  : Number of reduce tasks determined at compile time: 1
+INFO  : In order to change the average load for a reducer (in bytes):
+INFO  :   set hive.exec.reducers.bytes.per.reducer=<number>
+INFO  : In order to limit the maximum number of reducers:
+INFO  :   set hive.exec.reducers.max=<number>
+INFO  : In order to set a constant number of reducers:
+INFO  :   set mapreduce.job.reduces=<number>
+INFO  : number of splits:1
+INFO  : Submitting tokens for job: job_1792541447442_0068
+INFO  : Executing with tokens: []
+INFO  : The url to track the job: http://resourcemanager:8088/proxy/application_1792541447442_0068/
+INFO  : Starting Job = job_1792541447442_0068, Tracking URL = http://resourcemanager:8088/proxy/application_1792541447442_0068/
+INFO  : Kill Command = /opt/hadoop/bin/mapred job  -kill job_1792541447442_0068
+INFO  : Hadoop job information for Stage-3: number of mappers: 1; number of reducers: 1
+INFO  : 2026-10-24 02:37:18,501 Stage-3 map = 0%,  reduce = 0%
+INFO  : 2026-10-24 02:37:24,724 Stage-3 map = 100%,  reduce = 0%, Cumulative CPU 2.06 sec
+INFO  : 2026-10-24 02:37:30,916 Stage-3 map = 100%,  reduce = 100%, Cumulative CPU 3.78 sec
+INFO  : MapReduce Total cumulative CPU time: 3 seconds 780 msec
+INFO  : Ended Job = job_1792541447442_0068
+INFO  : MapReduce Jobs Launched: 
+INFO  : Stage-Stage-2: Map: 8  Reduce: 1   Cumulative CPU: 37.01 sec   HDFS Read: 24634100 HDFS Write: 109325 HDFS EC Read: 0 SUCCESS
+INFO  : Stage-Stage-3: Map: 1  Reduce: 1   Cumulative CPU: 3.78 sec   HDFS Read: 120027 HDFS Write: 624 HDFS EC Read: 0 SUCCESS
+INFO  : Total MapReduce CPU Time Spent: 40 seconds 790 msec
+INFO  : Completed executing command(queryId=root_20261024023557_4bfe201b-6479-4ce2-8271-aef94acc9774); Time taken: 93.928 seconds
+10 rows selected (94.227 seconds)
+0: jdbc:hive2://hive:10000/default> 
+0: jdbc:hive2://hive:10000/default> -- A2.5 Duree moyenne par appareil et qualite
+0: jdbc:hive2://hive:10000/default> --  * duree_moy_tous    : tous types d'evenements (pause/recherche ~ 90 s)
+0: jdbc:hive2://hive:10000/default> --  * duree_moy_lecture : evenements 'lecture' seulement (plus representatif)
+0: jdbc:hive2://hive:10000/default> SELECT device, quality,
+. . . . . . . . . . . . . . . . . >        COUNT(*)                                                       AS nb_evenements,
+. . . . . . . . . . . . . . . . . >        ROUND(AVG(watch_seconds), 1)                                   AS duree_moy_tous,
+. . . . . . . . . . . . . . . . . >        ROUND(AVG(IF(event_type = 'lecture', watch_seconds, NULL)), 1) AS duree_moy_lecture
+. . . . . . . . . . . . . . . . . > FROM evenements_massifs
+. . . . . . . . . . . . . . . . . > GROUP BY device, quality
+. . . . . . . . . . . . . . . . . > ORDER BY device, quality;
+INFO  : Compiling command(queryId=root_20261024023732_34316d6c-4cd8-4fea-8fa5-c5d8018f0627): SELECT device, quality,
+COUNT(*)                                                       AS nb_evenements,
+ROUND(AVG(watch_seconds), 1)                                   AS duree_moy_tous,
+ROUND(AVG(IF(event_type = 'lecture', watch_seconds, NULL)), 1) AS duree_moy_lecture
+FROM evenements_massifs
+GROUP BY device, quality
+ORDER BY device, quality
+INFO  : No Stats for inf6303_devoir1@evenements_massifs, Columns: event_type, watch_seconds, device, quality
+INFO  : Semantic Analysis Completed (retrial = false)
+INFO  : Created Hive schema: Schema(fieldSchemas:[FieldSchema(name:device, type:string, comment:null), FieldSchema(name:quality, type:string, comment:null), FieldSchema(name:nb_evenements, type:bigint, comment:null), FieldSchema(name:duree_moy_tous, type:double, comment:null), FieldSchema(name:duree_moy_lecture, type:double, comment:null)], properties:null)
+INFO  : Completed compiling command(queryId=root_20261024023732_34316d6c-4cd8-4fea-8fa5-c5d8018f0627); Time taken: 0.131 seconds
+INFO  : Concurrency mode is disabled, not creating a lock manager
+INFO  : Executing command(queryId=root_20261024023732_34316d6c-4cd8-4fea-8fa5-c5d8018f0627): SELECT device, quality,
+COUNT(*)                                                       AS nb_evenements,
+ROUND(AVG(watch_seconds), 1)                                   AS duree_moy_tous,
+ROUND(AVG(IF(event_type = 'lecture', watch_seconds, NULL)), 1) AS duree_moy_lecture
+FROM evenements_massifs
+GROUP BY device, quality
+ORDER BY device, quality
+WARN  : Hive-on-MR is deprecated in Hive 2 and may not be available in the future versions. Consider using a different execution engine (i.e. tez) or using Hive 1.X releases.
+INFO  : Query ID = root_20261024023732_34316d6c-4cd8-4fea-8fa5-c5d8018f0627
+INFO  : Total jobs = 2
+INFO  : Launching Job 1 out of 2
+INFO  : Starting task [Stage-1:MAPRED] in serial mode
+INFO  : Number of reduce tasks not specified. Estimated from input data size: 1
+INFO  : In order to change the average load for a reducer (in bytes):
+INFO  :   set hive.exec.reducers.bytes.per.reducer=<number>
+INFO  : In order to limit the maximum number of reducers:
+INFO  :   set hive.exec.reducers.max=<number>
+INFO  : In order to set a constant number of reducers:
+INFO  :   set mapreduce.job.reduces=<number>
+INFO  : number of splits:8
+INFO  : Submitting tokens for job: job_1792541447442_0069
+INFO  : Executing with tokens: []
+INFO  : The url to track the job: http://resourcemanager:8088/proxy/application_1792541447442_0069/
+INFO  : Starting Job = job_1792541447442_0069, Tracking URL = http://resourcemanager:8088/proxy/application_1792541447442_0069/
+INFO  : Kill Command = /opt/hadoop/bin/mapred job  -kill job_1792541447442_0069
+INFO  : Hadoop job information for Stage-1: number of mappers: 8; number of reducers: 1
+INFO  : 2026-10-24 02:37:43,976 Stage-1 map = 0%,  reduce = 0%
+INFO  : 2026-10-24 02:37:50,189 Stage-1 map = 13%,  reduce = 0%, Cumulative CPU 4.05 sec
+INFO  : 2026-10-24 02:37:56,377 Stage-1 map = 25%,  reduce = 0%, Cumulative CPU 8.16 sec
+INFO  : 2026-10-24 02:38:01,536 Stage-1 map = 38%,  reduce = 0%, Cumulative CPU 12.0 sec
+INFO  : 2026-10-24 02:38:06,685 Stage-1 map = 50%,  reduce = 0%, Cumulative CPU 15.82 sec
+INFO  : 2026-10-24 02:38:11,835 Stage-1 map = 63%,  reduce = 0%, Cumulative CPU 19.7 sec
+INFO  : 2026-10-24 02:38:15,965 Stage-1 map = 75%,  reduce = 0%, Cumulative CPU 23.55 sec
+INFO  : 2026-10-24 02:38:21,125 Stage-1 map = 88%,  reduce = 0%, Cumulative CPU 27.34 sec
+INFO  : 2026-10-24 02:38:26,272 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 31.33 sec
+INFO  : 2026-10-24 02:38:31,414 Stage-1 map = 100%,  reduce = 100%, Cumulative CPU 34.17 sec
+INFO  : MapReduce Total cumulative CPU time: 34 seconds 170 msec
+INFO  : Ended Job = job_1792541447442_0069
+INFO  : Launching Job 2 out of 2
+INFO  : Starting task [Stage-2:MAPRED] in serial mode
+INFO  : Number of reduce tasks determined at compile time: 1
+INFO  : In order to change the average load for a reducer (in bytes):
+INFO  :   set hive.exec.reducers.bytes.per.reducer=<number>
+INFO  : In order to limit the maximum number of reducers:
+INFO  :   set hive.exec.reducers.max=<number>
+INFO  : In order to set a constant number of reducers:
+INFO  :   set mapreduce.job.reduces=<number>
+INFO  : number of splits:1
+INFO  : Submitting tokens for job: job_1792541447442_0070
+INFO  : Executing with tokens: []
+INFO  : The url to track the job: http://resourcemanager:8088/proxy/application_1792541447442_0070/
+INFO  : Starting Job = job_1792541447442_0070, Tracking URL = http://resourcemanager:8088/proxy/application_1792541447442_0070/
+INFO  : Kill Command = /opt/hadoop/bin/mapred job  -kill job_1792541447442_0070
+INFO  : Hadoop job information for Stage-2: number of mappers: 1; number of reducers: 1
+INFO  : 2026-10-24 02:38:44,203 Stage-2 map = 0%,  reduce = 0%
+INFO  : 2026-10-24 02:38:50,402 Stage-2 map = 100%,  reduce = 0%, Cumulative CPU 1.54 sec
+INFO  : 2026-10-24 02:38:56,600 Stage-2 map = 100%,  reduce = 100%, Cumulative CPU 3.27 sec
+INFO  : MapReduce Total cumulative CPU time: 3 seconds 270 msec
+INFO  : Ended Job = job_1792541447442_0070
+INFO  : MapReduce Jobs Launched: 
+INFO  : Stage-Stage-1: Map: 8  Reduce: 1   Cumulative CPU: 34.17 sec   HDFS Read: 24615579 HDFS Write: 882 HDFS EC Read: 0 SUCCESS
+INFO  : Stage-Stage-2: Map: 1  Reduce: 1   Cumulative CPU: 3.27 sec   HDFS Read: 11137 HDFS Write: 806 HDFS EC Read: 0 SUCCESS
+INFO  : Total MapReduce CPU Time Spent: 37 seconds 440 msec
+INFO  : Completed executing command(queryId=root_20261024023732_34316d6c-4cd8-4fea-8fa5-c5d8018f0627); Time taken: 85.212 seconds
+16 rows selected (85.366 seconds)
+0: jdbc:hive2://hive:10000/default> 
+0: jdbc:hive2://hive:10000/default> -- A2.6 Plan d'execution de la requete A2.4 (jointure + agregation + tri)
+0: jdbc:hive2://hive:10000/default> EXPLAIN
+. . . . . . . . . . . . . . . . . > SELECT e.content_id, c.title, c.genre,
+. . . . . . . . . . . . . . . . . >        SUM(e.watch_seconds) AS total_watch_sec,
+. . . . . . . . . . . . . . . . . >        COUNT(*)             AS nb_evenements
+. . . . . . . . . . . . . . . . . > FROM evenements_massifs e
+. . . . . . . . . . . . . . . . . > JOIN catalogue_contenus c ON e.content_id = c.content_id
+. . . . . . . . . . . . . . . . . > GROUP BY e.content_id, c.title, c.genre
+. . . . . . . . . . . . . . . . . > ORDER BY total_watch_sec DESC
+. . . . . . . . . . . . . . . . . > LIMIT 10;
+INFO  : Compiling command(queryId=root_20261024023857_3c3530ef-7819-4c0a-a60a-950f3308f2bd): EXPLAIN
+SELECT e.content_id, c.title, c.genre,
+SUM(e.watch_seconds) AS total_watch_sec,
+COUNT(*)             AS nb_evenements
+FROM evenements_massifs e
+JOIN catalogue_contenus c ON e.content_id = c.content_id
+GROUP BY e.content_id, c.title, c.genre
+ORDER BY total_watch_sec DESC
+LIMIT 10
+INFO  : No Stats for inf6303_devoir1@evenements_massifs, Columns: content_id, watch_seconds
+INFO  : No Stats for inf6303_devoir1@catalogue_contenus, Columns: content_id, genre, title
+INFO  : Semantic Analysis Completed (retrial = false)
+INFO  : Created Hive schema: Schema(fieldSchemas:[FieldSchema(name:Explain, type:string, comment:null)], properties:null)
+INFO  : Completed compiling command(queryId=root_20261024023857_3c3530ef-7819-4c0a-a60a-950f3308f2bd); Time taken: 0.289 seconds
+INFO  : Concurrency mode is disabled, not creating a lock manager
+INFO  : Executing command(queryId=root_20261024023857_3c3530ef-7819-4c0a-a60a-950f3308f2bd): EXPLAIN
+SELECT e.content_id, c.title, c.genre,
+SUM(e.watch_seconds) AS total_watch_sec,
+COUNT(*)             AS nb_evenements
+FROM evenements_massifs e
+JOIN catalogue_contenus c ON e.content_id = c.content_id
+GROUP BY e.content_id, c.title, c.genre
+ORDER BY total_watch_sec DESC
+LIMIT 10
+INFO  : Starting task [Stage-7:EXPLAIN] in serial mode
+INFO  : Completed executing command(queryId=root_20261024023857_3c3530ef-7819-4c0a-a60a-950f3308f2bd); Time taken: 0.004 seconds
+118 rows selected (0.314 seconds)
+0: jdbc:hive2://hive:10000/default> 
+0: jdbc:hive2://hive:10000/default> -- =====================================================================
+0: jdbc:hive2://hive:10000/default> -- A3. SORTIE TRANSMISE A MONGODB
+0: jdbc:hive2://hive:10000/default> -- =====================================================================
+0: jdbc:hive2://hive:10000/default> 
+0: jdbc:hive2://hive:10000/default> -- A3.1 Table externe de sortie posee sur le repertoire HDFS impose.
+0: jdbc:hive2://hive:10000/default> --      CSV sans en-tete, separateur virgule. Ordre des colonnes :
+0: jdbc:hive2://hive:10000/default> --      user_id, country, nb_events, total_watch_sec, segment
+0: jdbc:hive2://hive:10000/default> DROP TABLE IF EXISTS segments_utilisateurs;
+INFO  : Compiling command(queryId=root_20261024023858_dced5404-dcbc-4d30-a8ca-d0ffc66810f2): DROP TABLE IF EXISTS segments_utilisateurs
+INFO  : Semantic Analysis Completed (retrial = false)
+INFO  : Created Hive schema: Schema(fieldSchemas:null, properties:null)
+INFO  : Completed compiling command(queryId=root_20261024023858_dced5404-dcbc-4d30-a8ca-d0ffc66810f2); Time taken: 0.005 seconds
+INFO  : Concurrency mode is disabled, not creating a lock manager
+INFO  : Executing command(queryId=root_20261024023858_dced5404-dcbc-4d30-a8ca-d0ffc66810f2): DROP TABLE IF EXISTS segments_utilisateurs
+INFO  : Starting task [Stage-0:DDL] in serial mode
+INFO  : Completed executing command(queryId=root_20261024023858_dced5404-dcbc-4d30-a8ca-d0ffc66810f2); Time taken: 0.033 seconds
+No rows affected (0.052 seconds)
+0: jdbc:hive2://hive:10000/default> CREATE EXTERNAL TABLE segments_utilisateurs (
+. . . . . . . . . . . . . . . . . >   user_id         STRING,
+. . . . . . . . . . . . . . . . . >   country         STRING,
+. . . . . . . . . . . . . . . . . >   nb_events       BIGINT,
+. . . . . . . . . . . . . . . . . >   total_watch_sec BIGINT,
+. . . . . . . . . . . . . . . . . >   segment         STRING
+. . . . . . . . . . . . . . . . . > )
+. . . . . . . . . . . . . . . . . > ROW FORMAT DELIMITED FIELDS TERMINATED BY ','
+. . . . . . . . . . . . . . . . . > STORED AS TEXTFILE
+. . . . . . . . . . . . . . . . . > LOCATION '/inf6303/devoir1/sorties/segments';
+INFO  : Compiling command(queryId=root_20261024023858_9d5ce809-2bb4-4642-97df-8e163493b867): CREATE EXTERNAL TABLE segments_utilisateurs (
+user_id         STRING,
+country         STRING,
+nb_events       BIGINT,
+total_watch_sec BIGINT,
+segment         STRING
+)
+ROW FORMAT DELIMITED FIELDS TERMINATED BY ','
+STORED AS TEXTFILE
+LOCATION '/inf6303/devoir1/sorties/segments'
+INFO  : Semantic Analysis Completed (retrial = false)
+INFO  : Created Hive schema: Schema(fieldSchemas:null, properties:null)
+INFO  : Completed compiling command(queryId=root_20261024023858_9d5ce809-2bb4-4642-97df-8e163493b867); Time taken: 0.002 seconds
+INFO  : Concurrency mode is disabled, not creating a lock manager
+INFO  : Executing command(queryId=root_20261024023858_9d5ce809-2bb4-4642-97df-8e163493b867): CREATE EXTERNAL TABLE segments_utilisateurs (
+user_id         STRING,
+country         STRING,
+nb_events       BIGINT,
+total_watch_sec BIGINT,
+segment         STRING
+)
+ROW FORMAT DELIMITED FIELDS TERMINATED BY ','
+STORED AS TEXTFILE
+LOCATION '/inf6303/devoir1/sorties/segments'
+INFO  : Starting task [Stage-0:DDL] in serial mode
+INFO  : Completed executing command(queryId=root_20261024023858_9d5ce809-2bb4-4642-97df-8e163493b867); Time taken: 0.016 seconds
+No rows affected (0.036 seconds)
+0: jdbc:hive2://hive:10000/default> 
+0: jdbc:hive2://hive:10000/default> -- A3.2 Agregation par utilisateur + segmentation (seuils du complement
+0: jdbc:hive2://hive:10000/default> --      du 6 octobre 2026 : seule la duree totale determine le segment ;
+0: jdbc:hive2://hive:10000/default> --      nb_events est calcule et conserve mais n'intervient pas).
+0: jdbc:hive2://hive:10000/default> --      INSERT OVERWRITE : rejouable, remplace la sortie precedente.
+0: jdbc:hive2://hive:10000/default> INSERT OVERWRITE TABLE segments_utilisateurs
+. . . . . . . . . . . . . . . . . > SELECT
+. . . . . . . . . . . . . . . . . >   user_id,
+. . . . . . . . . . . . . . . . . >   country,
+. . . . . . . . . . . . . . . . . >   COUNT(*)           AS nb_events,
+. . . . . . . . . . . . . . . . . >   SUM(watch_seconds) AS total_watch_sec,
+. . . . . . . . . . . . . . . . . >   CASE
+. . . . . . . . . . . . . . . . . >     WHEN SUM(watch_seconds) >= 55000 THEN 'intensif'
+. . . . . . . . . . . . . . . . . >     WHEN SUM(watch_seconds) >= 30000 THEN 'actif'
+. . . . . . . . . . . . . . . . . >     ELSE 'occasionnel'
+. . . . . . . . . . . . . . . . . >   END AS segment
+. . . . . . . . . . . . . . . . . > FROM evenements_massifs
+. . . . . . . . . . . . . . . . . > GROUP BY user_id, country;
+INFO  : Compiling command(queryId=root_20261024023859_c7f58c25-7c09-4625-9880-f74c232540e1): INSERT OVERWRITE TABLE segments_utilisateurs
+SELECT
+user_id,
+country,
+COUNT(*)           AS nb_events,
+SUM(watch_seconds) AS total_watch_sec,
+CASE
+WHEN SUM(watch_seconds) >= 55000 THEN 'intensif'
+WHEN SUM(watch_seconds) >= 30000 THEN 'actif'
+ELSE 'occasionnel'
+END AS segment
+FROM evenements_massifs
+GROUP BY user_id, country
+INFO  : No Stats for inf6303_devoir1@evenements_massifs, Columns: country, user_id, watch_seconds
+INFO  : Semantic Analysis Completed (retrial = false)
+INFO  : Created Hive schema: Schema(fieldSchemas:[FieldSchema(name:user_id, type:string, comment:null), FieldSchema(name:country, type:string, comment:null), FieldSchema(name:nb_events, type:bigint, comment:null), FieldSchema(name:total_watch_sec, type:bigint, comment:null), FieldSchema(name:segment, type:string, comment:null)], properties:null)
+INFO  : Completed compiling command(queryId=root_20261024023859_c7f58c25-7c09-4625-9880-f74c232540e1); Time taken: 0.092 seconds
+INFO  : Concurrency mode is disabled, not creating a lock manager
+INFO  : Executing command(queryId=root_20261024023859_c7f58c25-7c09-4625-9880-f74c232540e1): INSERT OVERWRITE TABLE segments_utilisateurs
+SELECT
+user_id,
+country,
+COUNT(*)           AS nb_events,
+SUM(watch_seconds) AS total_watch_sec,
+CASE
+WHEN SUM(watch_seconds) >= 55000 THEN 'intensif'
+WHEN SUM(watch_seconds) >= 30000 THEN 'actif'
+ELSE 'occasionnel'
+END AS segment
+FROM evenements_massifs
+GROUP BY user_id, country
+WARN  : Hive-on-MR is deprecated in Hive 2 and may not be available in the future versions. Consider using a different execution engine (i.e. tez) or using Hive 1.X releases.
+INFO  : Query ID = root_20261024023859_c7f58c25-7c09-4625-9880-f74c232540e1
+INFO  : Total jobs = 1
+INFO  : Launching Job 1 out of 1
+INFO  : Starting task [Stage-1:MAPRED] in serial mode
+INFO  : Number of reduce tasks not specified. Estimated from input data size: 1
+INFO  : In order to change the average load for a reducer (in bytes):
+INFO  :   set hive.exec.reducers.bytes.per.reducer=<number>
+INFO  : In order to limit the maximum number of reducers:
+INFO  :   set hive.exec.reducers.max=<number>
+INFO  : In order to set a constant number of reducers:
+INFO  :   set mapreduce.job.reduces=<number>
+INFO  : number of splits:8
+INFO  : Submitting tokens for job: job_1792541447442_0071
+INFO  : Executing with tokens: []
+INFO  : The url to track the job: http://resourcemanager:8088/proxy/application_1792541447442_0071/
+INFO  : Starting Job = job_1792541447442_0071, Tracking URL = http://resourcemanager:8088/proxy/application_1792541447442_0071/
+INFO  : Kill Command = /opt/hadoop/bin/mapred job  -kill job_1792541447442_0071
+INFO  : Hadoop job information for Stage-1: number of mappers: 8; number of reducers: 1
+INFO  : 2026-10-24 02:39:10,362 Stage-1 map = 0%,  reduce = 0%
+INFO  : 2026-10-24 02:39:16,713 Stage-1 map = 13%,  reduce = 0%, Cumulative CPU 3.27 sec
+INFO  : 2026-10-24 02:39:22,927 Stage-1 map = 25%,  reduce = 0%, Cumulative CPU 6.44 sec
+INFO  : 2026-10-24 02:39:27,038 Stage-1 map = 38%,  reduce = 0%, Cumulative CPU 9.59 sec
+INFO  : 2026-10-24 02:39:32,193 Stage-1 map = 50%,  reduce = 0%, Cumulative CPU 12.89 sec
+INFO  : 2026-10-24 02:39:37,332 Stage-1 map = 63%,  reduce = 0%, Cumulative CPU 16.06 sec
+INFO  : 2026-10-24 02:39:42,488 Stage-1 map = 75%,  reduce = 0%, Cumulative CPU 19.31 sec
+INFO  : 2026-10-24 02:39:47,646 Stage-1 map = 88%,  reduce = 0%, Cumulative CPU 22.75 sec
+INFO  : 2026-10-24 02:39:52,797 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 25.99 sec
+INFO  : 2026-10-24 02:39:57,958 Stage-1 map = 100%,  reduce = 100%, Cumulative CPU 31.47 sec
+INFO  : MapReduce Total cumulative CPU time: 31 seconds 470 msec
+INFO  : Ended Job = job_1792541447442_0071
+INFO  : Starting task [Stage-0:MOVE] in serial mode
+INFO  : Loading data to table inf6303_devoir1.segments_utilisateurs from hdfs://namenode:9000/inf6303/devoir1/sorties/segments/.hive-staging_hive_2026-10-24_02-38-59_142_2407789170743057224-9/-ext-10000
+INFO  : Starting task [Stage-2:STATS] in serial mode
+INFO  : Executing stats task
+INFO  : Table inf6303_devoir1.segments_utilisateurs stats: [numFiles=1, numRows=50000, totalSize=1654528, rawDataSize=1604528, numFilesErasureCoded=0]
+INFO  : MapReduce Jobs Launched: 
+INFO  : Stage-Stage-1: Map: 8  Reduce: 1   Cumulative CPU: 31.47 sec   HDFS Read: 24603424 HDFS Write: 1654630 HDFS EC Read: 0 SUCCESS
+INFO  : Total MapReduce CPU Time Spent: 31 seconds 470 msec
+INFO  : Completed executing command(queryId=root_20261024023859_c7f58c25-7c09-4625-9880-f74c232540e1); Time taken: 59.867 seconds
+50,000 rows affected (59.971 seconds)
+0: jdbc:hive2://hive:10000/default> 
+0: jdbc:hive2://hive:10000/default> -- A3.3 Controles de coherence de la sortie
+0: jdbc:hive2://hive:10000/default> --  * 1 ligne par utilisateur (lignes = user_id distincts = 50 000)
+0: jdbc:hive2://hive:10000/default> --  * conservation des volumes : somme nb_events = 1 000 000
+0: jdbc:hive2://hive:10000/default> SELECT COUNT(*)                AS nb_lignes,
+. . . . . . . . . . . . . . . . . >        COUNT(DISTINCT user_id) AS user_id_distincts,
+. . . . . . . . . . . . . . . . . >        SUM(nb_events)          AS somme_nb_events,
+. . . . . . . . . . . . . . . . . >        SUM(total_watch_sec)    AS somme_total_watch_sec
+. . . . . . . . . . . . . . . . . > FROM segments_utilisateurs;
+INFO  : Compiling command(queryId=root_20261024023959_930a3692-9575-4491-9636-0fee094fb64b): SELECT COUNT(*)                AS nb_lignes,
+COUNT(DISTINCT user_id) AS user_id_distincts,
+SUM(nb_events)          AS somme_nb_events,
+SUM(total_watch_sec)    AS somme_total_watch_sec
+FROM segments_utilisateurs
+INFO  : No Stats for inf6303_devoir1@segments_utilisateurs, Columns: user_id, nb_events, total_watch_sec
+INFO  : Semantic Analysis Completed (retrial = false)
+INFO  : Created Hive schema: Schema(fieldSchemas:[FieldSchema(name:nb_lignes, type:bigint, comment:null), FieldSchema(name:user_id_distincts, type:bigint, comment:null), FieldSchema(name:somme_nb_events, type:bigint, comment:null), FieldSchema(name:somme_total_watch_sec, type:bigint, comment:null)], properties:null)
+INFO  : Completed compiling command(queryId=root_20261024023959_930a3692-9575-4491-9636-0fee094fb64b); Time taken: 0.073 seconds
+INFO  : Concurrency mode is disabled, not creating a lock manager
+INFO  : Executing command(queryId=root_20261024023959_930a3692-9575-4491-9636-0fee094fb64b): SELECT COUNT(*)                AS nb_lignes,
+COUNT(DISTINCT user_id) AS user_id_distincts,
+SUM(nb_events)          AS somme_nb_events,
+SUM(total_watch_sec)    AS somme_total_watch_sec
+FROM segments_utilisateurs
+WARN  : Hive-on-MR is deprecated in Hive 2 and may not be available in the future versions. Consider using a different execution engine (i.e. tez) or using Hive 1.X releases.
+INFO  : Query ID = root_20261024023959_930a3692-9575-4491-9636-0fee094fb64b
+INFO  : Total jobs = 1
+INFO  : Launching Job 1 out of 1
+INFO  : Starting task [Stage-1:MAPRED] in serial mode
+INFO  : Number of reduce tasks determined at compile time: 1
+INFO  : In order to change the average load for a reducer (in bytes):
+INFO  :   set hive.exec.reducers.bytes.per.reducer=<number>
+INFO  : In order to limit the maximum number of reducers:
+INFO  :   set hive.exec.reducers.max=<number>
+INFO  : In order to set a constant number of reducers:
+INFO  :   set mapreduce.job.reduces=<number>
+INFO  : number of splits:2
+INFO  : Submitting tokens for job: job_1792541447442_0072
+INFO  : Executing with tokens: []
+INFO  : The url to track the job: http://resourcemanager:8088/proxy/application_1792541447442_0072/
+INFO  : Starting Job = job_1792541447442_0072, Tracking URL = http://resourcemanager:8088/proxy/application_1792541447442_0072/
+INFO  : Kill Command = /opt/hadoop/bin/mapred job  -kill job_1792541447442_0072
+INFO  : Hadoop job information for Stage-1: number of mappers: 2; number of reducers: 1
+INFO  : 2026-10-24 02:40:11,346 Stage-1 map = 0%,  reduce = 0%
+INFO  : 2026-10-24 02:40:17,545 Stage-1 map = 50%,  reduce = 0%, Cumulative CPU 3.05 sec
+INFO  : 2026-10-24 02:40:23,737 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 6.06 sec
+INFO  : 2026-10-24 02:40:27,867 Stage-1 map = 100%,  reduce = 100%, Cumulative CPU 9.16 sec
+INFO  : MapReduce Total cumulative CPU time: 9 seconds 160 msec
+INFO  : Ended Job = job_1792541447442_0072
+INFO  : MapReduce Jobs Launched: 
+INFO  : Stage-Stage-1: Map: 2  Reduce: 1   Cumulative CPU: 9.16 sec   HDFS Read: 1686826 HDFS Write: 130 HDFS EC Read: 0 SUCCESS
+INFO  : Total MapReduce CPU Time Spent: 9 seconds 160 msec
+INFO  : Completed executing command(queryId=root_20261024023959_930a3692-9575-4491-9636-0fee094fb64b); Time taken: 29.529 seconds
+1 row selected (29.619 seconds)
+0: jdbc:hive2://hive:10000/default> 
+0: jdbc:hive2://hive:10000/default> -- Reference : duree totale calculee directement sur les evenements
+0: jdbc:hive2://hive:10000/default> SELECT SUM(watch_seconds) AS somme_watch_seconds_source
+. . . . . . . . . . . . . . . . . > FROM evenements_massifs;
+INFO  : Compiling command(queryId=root_20261024024029_baa7a52e-16cb-4d5b-8e49-a091e458179c): SELECT SUM(watch_seconds) AS somme_watch_seconds_source
+FROM evenements_massifs
+INFO  : No Stats for inf6303_devoir1@evenements_massifs, Columns: watch_seconds
+INFO  : Semantic Analysis Completed (retrial = false)
+INFO  : Created Hive schema: Schema(fieldSchemas:[FieldSchema(name:somme_watch_seconds_source, type:bigint, comment:null)], properties:null)
+INFO  : Completed compiling command(queryId=root_20261024024029_baa7a52e-16cb-4d5b-8e49-a091e458179c); Time taken: 0.075 seconds
+INFO  : Concurrency mode is disabled, not creating a lock manager
+INFO  : Executing command(queryId=root_20261024024029_baa7a52e-16cb-4d5b-8e49-a091e458179c): SELECT SUM(watch_seconds) AS somme_watch_seconds_source
+FROM evenements_massifs
+WARN  : Hive-on-MR is deprecated in Hive 2 and may not be available in the future versions. Consider using a different execution engine (i.e. tez) or using Hive 1.X releases.
+INFO  : Query ID = root_20261024024029_baa7a52e-16cb-4d5b-8e49-a091e458179c
+INFO  : Total jobs = 1
+INFO  : Launching Job 1 out of 1
+INFO  : Starting task [Stage-1:MAPRED] in serial mode
+INFO  : Number of reduce tasks determined at compile time: 1
+INFO  : In order to change the average load for a reducer (in bytes):
+INFO  :   set hive.exec.reducers.bytes.per.reducer=<number>
+INFO  : In order to limit the maximum number of reducers:
+INFO  :   set hive.exec.reducers.max=<number>
+INFO  : In order to set a constant number of reducers:
+INFO  :   set mapreduce.job.reduces=<number>
+INFO  : number of splits:8
+INFO  : Submitting tokens for job: job_1792541447442_0073
+INFO  : Executing with tokens: []
+INFO  : The url to track the job: http://resourcemanager:8088/proxy/application_1792541447442_0073/
+INFO  : Starting Job = job_1792541447442_0073, Tracking URL = http://resourcemanager:8088/proxy/application_1792541447442_0073/
+INFO  : Kill Command = /opt/hadoop/bin/mapred job  -kill job_1792541447442_0073
+INFO  : Hadoop job information for Stage-1: number of mappers: 8; number of reducers: 1
+INFO  : 2026-10-24 02:40:40,672 Stage-1 map = 0%,  reduce = 0%
+INFO  : 2026-10-24 02:40:46,888 Stage-1 map = 13%,  reduce = 0%, Cumulative CPU 2.64 sec
+INFO  : 2026-10-24 02:40:52,060 Stage-1 map = 25%,  reduce = 0%, Cumulative CPU 5.39 sec
+INFO  : 2026-10-24 02:40:57,215 Stage-1 map = 38%,  reduce = 0%, Cumulative CPU 8.04 sec
+INFO  : 2026-10-24 02:41:02,360 Stage-1 map = 50%,  reduce = 0%, Cumulative CPU 10.8 sec
+INFO  : 2026-10-24 02:41:07,532 Stage-1 map = 63%,  reduce = 0%, Cumulative CPU 13.68 sec
+INFO  : 2026-10-24 02:41:11,659 Stage-1 map = 75%,  reduce = 0%, Cumulative CPU 16.32 sec
+INFO  : 2026-10-24 02:41:16,823 Stage-1 map = 88%,  reduce = 0%, Cumulative CPU 19.2 sec
+INFO  : 2026-10-24 02:41:21,981 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 21.72 sec
+INFO  : 2026-10-24 02:41:26,108 Stage-1 map = 100%,  reduce = 100%, Cumulative CPU 23.48 sec
+INFO  : MapReduce Total cumulative CPU time: 23 seconds 480 msec
+INFO  : Ended Job = job_1792541447442_0073
+INFO  : MapReduce Jobs Launched: 
+INFO  : Stage-Stage-1: Map: 8  Reduce: 1   Cumulative CPU: 23.48 sec   HDFS Read: 24595249 HDFS Write: 110 HDFS EC Read: 0 SUCCESS
+INFO  : Total MapReduce CPU Time Spent: 23 seconds 480 msec
+INFO  : Completed executing command(queryId=root_20261024024029_baa7a52e-16cb-4d5b-8e49-a091e458179c); Time taken: 59.073 seconds
+1 row selected (59.162 seconds)
+0: jdbc:hive2://hive:10000/default> 
+0: jdbc:hive2://hive:10000/default> -- A3.4 Repartition par segment (attendu : actif 30 901, intensif 7 430,
+0: jdbc:hive2://hive:10000/default> --      occasionnel 11 669) et verification des bornes des seuils
+0: jdbc:hive2://hive:10000/default> SELECT segment,
+. . . . . . . . . . . . . . . . . >        COUNT(*)                     AS nb_utilisateurs,
+. . . . . . . . . . . . . . . . . >        MIN(total_watch_sec)         AS duree_min,
+. . . . . . . . . . . . . . . . . >        MAX(total_watch_sec)         AS duree_max,
+. . . . . . . . . . . . . . . . . >        ROUND(AVG(nb_events), 1)     AS nb_events_moyen
+. . . . . . . . . . . . . . . . . > FROM segments_utilisateurs
+. . . . . . . . . . . . . . . . . > GROUP BY segment
+. . . . . . . . . . . . . . . . . > ORDER BY segment;
+INFO  : Compiling command(queryId=root_20261024024128_e134d7fb-8838-4f4b-89f8-48ef5d348138): SELECT segment,
+COUNT(*)                     AS nb_utilisateurs,
+MIN(total_watch_sec)         AS duree_min,
+MAX(total_watch_sec)         AS duree_max,
+ROUND(AVG(nb_events), 1)     AS nb_events_moyen
+FROM segments_utilisateurs
+GROUP BY segment
+ORDER BY segment
+INFO  : No Stats for inf6303_devoir1@segments_utilisateurs, Columns: nb_events, segment, total_watch_sec
+INFO  : Semantic Analysis Completed (retrial = false)
+INFO  : Created Hive schema: Schema(fieldSchemas:[FieldSchema(name:segment, type:string, comment:null), FieldSchema(name:nb_utilisateurs, type:bigint, comment:null), FieldSchema(name:duree_min, type:bigint, comment:null), FieldSchema(name:duree_max, type:bigint, comment:null), FieldSchema(name:nb_events_moyen, type:double, comment:null)], properties:null)
+INFO  : Completed compiling command(queryId=root_20261024024128_e134d7fb-8838-4f4b-89f8-48ef5d348138); Time taken: 0.116 seconds
+INFO  : Concurrency mode is disabled, not creating a lock manager
+INFO  : Executing command(queryId=root_20261024024128_e134d7fb-8838-4f4b-89f8-48ef5d348138): SELECT segment,
+COUNT(*)                     AS nb_utilisateurs,
+MIN(total_watch_sec)         AS duree_min,
+MAX(total_watch_sec)         AS duree_max,
+ROUND(AVG(nb_events), 1)     AS nb_events_moyen
+FROM segments_utilisateurs
+GROUP BY segment
+ORDER BY segment
+WARN  : Hive-on-MR is deprecated in Hive 2 and may not be available in the future versions. Consider using a different execution engine (i.e. tez) or using Hive 1.X releases.
+INFO  : Query ID = root_20261024024128_e134d7fb-8838-4f4b-89f8-48ef5d348138
+INFO  : Total jobs = 2
+INFO  : Launching Job 1 out of 2
+INFO  : Starting task [Stage-1:MAPRED] in serial mode
+INFO  : Number of reduce tasks not specified. Estimated from input data size: 1
+INFO  : In order to change the average load for a reducer (in bytes):
+INFO  :   set hive.exec.reducers.bytes.per.reducer=<number>
+INFO  : In order to limit the maximum number of reducers:
+INFO  :   set hive.exec.reducers.max=<number>
+INFO  : In order to set a constant number of reducers:
+INFO  :   set mapreduce.job.reduces=<number>
+INFO  : number of splits:2
+INFO  : Submitting tokens for job: job_1792541447442_0074
+INFO  : Executing with tokens: []
+INFO  : The url to track the job: http://resourcemanager:8088/proxy/application_1792541447442_0074/
+INFO  : Starting Job = job_1792541447442_0074, Tracking URL = http://resourcemanager:8088/proxy/application_1792541447442_0074/
+INFO  : Kill Command = /opt/hadoop/bin/mapred job  -kill job_1792541447442_0074
+INFO  : Hadoop job information for Stage-1: number of mappers: 2; number of reducers: 1
+INFO  : 2026-10-24 02:41:40,074 Stage-1 map = 0%,  reduce = 0%
+INFO  : 2026-10-24 02:41:46,269 Stage-1 map = 50%,  reduce = 0%, Cumulative CPU 2.46 sec
+INFO  : 2026-10-24 02:41:51,438 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 4.83 sec
+INFO  : 2026-10-24 02:41:56,590 Stage-1 map = 100%,  reduce = 100%, Cumulative CPU 7.66 sec
+INFO  : MapReduce Total cumulative CPU time: 7 seconds 660 msec
+INFO  : Ended Job = job_1792541447442_0074
+INFO  : Launching Job 2 out of 2
+INFO  : Starting task [Stage-2:MAPRED] in serial mode
+INFO  : Number of reduce tasks determined at compile time: 1
+INFO  : In order to change the average load for a reducer (in bytes):
+INFO  :   set hive.exec.reducers.bytes.per.reducer=<number>
+INFO  : In order to limit the maximum number of reducers:
+INFO  :   set hive.exec.reducers.max=<number>
+INFO  : In order to set a constant number of reducers:
+INFO  :   set mapreduce.job.reduces=<number>
+INFO  : number of splits:1
+INFO  : Submitting tokens for job: job_1792541447442_0075
+INFO  : Executing with tokens: []
+INFO  : The url to track the job: http://resourcemanager:8088/proxy/application_1792541447442_0075/
+INFO  : Starting Job = job_1792541447442_0075, Tracking URL = http://resourcemanager:8088/proxy/application_1792541447442_0075/
+INFO  : Kill Command = /opt/hadoop/bin/mapred job  -kill job_1792541447442_0075
+INFO  : Hadoop job information for Stage-2: number of mappers: 1; number of reducers: 1
+INFO  : 2026-10-24 02:42:09,738 Stage-2 map = 0%,  reduce = 0%
+INFO  : 2026-10-24 02:42:15,941 Stage-2 map = 100%,  reduce = 0%, Cumulative CPU 1.49 sec
+INFO  : 2026-10-24 02:42:21,110 Stage-2 map = 100%,  reduce = 100%, Cumulative CPU 3.23 sec
+INFO  : MapReduce Total cumulative CPU time: 3 seconds 230 msec
+INFO  : Ended Job = job_1792541447442_0075
+INFO  : MapReduce Jobs Launched: 
+INFO  : Stage-Stage-1: Map: 2  Reduce: 1   Cumulative CPU: 7.66 sec   HDFS Read: 1689013 HDFS Write: 226 HDFS EC Read: 0 SUCCESS
+INFO  : Stage-Stage-2: Map: 1  Reduce: 1   Cumulative CPU: 3.23 sec   HDFS Read: 10335 HDFS Write: 218 HDFS EC Read: 0 SUCCESS
+INFO  : Total MapReduce CPU Time Spent: 10 seconds 890 msec
+INFO  : Completed executing command(queryId=root_20261024024128_e134d7fb-8838-4f4b-89f8-48ef5d348138); Time taken: 54.634 seconds
+3 rows selected (54.766 seconds)
+0: jdbc:hive2://hive:10000/default> 
+0: jdbc:hive2://hive:10000/default> 
+0: jdbc:hive2://hive:10000/default> Closing: 0: jdbc:hive2://hive:10000/default

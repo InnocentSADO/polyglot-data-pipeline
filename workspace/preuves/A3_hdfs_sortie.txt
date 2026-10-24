@@ -1,0 +1,2 @@
+Found 1 items
+-rw-r--r--   1 root supergroup    1654528 2026-10-24 02:39 /inf6303/devoir1/sorties/segments/000000_0

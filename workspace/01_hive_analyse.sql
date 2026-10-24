@@ -22,6 +22,11 @@ SET hive.input.format=org.apache.hadoop.hive.ql.io.HiveInputFormat;
 -- sous-processus local (qui echoue dans ce conteneur : MapredLocalTask).
 SET hive.exec.submit.local.task.via.child=false;
 
+-- Statistiques de colonnes automatiques apres INSERT : desactivees.
+-- Hive 4 lance un job MR supplementaire apres chaque INSERT ; ce job
+-- echoue (meme bug de plan que UNION ALL sur le moteur MR deprecie).
+SET hive.stats.column.autogather=false;
+
 -- =====================================================================
 -- A1. TABLES ET QUALITE
 -- =====================================================================
@@ -174,4 +179,64 @@ GROUP BY e.content_id, c.title, c.genre
 ORDER BY total_watch_sec DESC
 LIMIT 10;
 
--- TODO A3 : segments par utilisateur -> /inf6303/devoir1/sorties/segments
+-- =====================================================================
+-- A3. SORTIE TRANSMISE A MONGODB
+-- =====================================================================
+
+-- A3.1 Table externe de sortie posee sur le repertoire HDFS impose.
+--      CSV sans en-tete, separateur virgule. Ordre des colonnes :
+--      user_id, country, nb_events, total_watch_sec, segment
+DROP TABLE IF EXISTS segments_utilisateurs;
+CREATE EXTERNAL TABLE segments_utilisateurs (
+  user_id         STRING,
+  country         STRING,
+  nb_events       BIGINT,
+  total_watch_sec BIGINT,
+  segment         STRING
+)
+ROW FORMAT DELIMITED FIELDS TERMINATED BY ','
+STORED AS TEXTFILE
+LOCATION '/inf6303/devoir1/sorties/segments';
+
+-- A3.2 Agregation par utilisateur + segmentation (seuils du complement
+--      du 6 octobre 2026 : seule la duree totale determine le segment ;
+--      nb_events est calcule et conserve mais n'intervient pas).
+--      INSERT OVERWRITE : rejouable, remplace la sortie precedente.
+INSERT OVERWRITE TABLE segments_utilisateurs
+SELECT
+  user_id,
+  country,
+  COUNT(*)           AS nb_events,
+  SUM(watch_seconds) AS total_watch_sec,
+  CASE
+    WHEN SUM(watch_seconds) >= 55000 THEN 'intensif'
+    WHEN SUM(watch_seconds) >= 30000 THEN 'actif'
+    ELSE 'occasionnel'
+  END AS segment
+FROM evenements_massifs
+GROUP BY user_id, country;
+
+-- A3.3 Controles de coherence de la sortie
+--  * 1 ligne par utilisateur (lignes = user_id distincts = 50 000)
+--  * conservation des volumes : somme nb_events = 1 000 000
+SELECT COUNT(*)                AS nb_lignes,
+       COUNT(DISTINCT user_id) AS user_id_distincts,
+       SUM(nb_events)          AS somme_nb_events,
+       SUM(total_watch_sec)    AS somme_total_watch_sec
+FROM segments_utilisateurs;
+
+-- Reference : duree totale calculee directement sur les evenements
+SELECT SUM(watch_seconds) AS somme_watch_seconds_source
+FROM evenements_massifs;
+
+-- A3.4 Repartition par segment (attendu : actif 30 901, intensif 7 430,
+--      occasionnel 11 669) et verification des bornes des seuils
+SELECT segment,
+       COUNT(*)                     AS nb_utilisateurs,
+       MIN(total_watch_sec)         AS duree_min,
+       MAX(total_watch_sec)         AS duree_max,
+       ROUND(AVG(nb_events), 1)     AS nb_events_moyen
+FROM segments_utilisateurs
+GROUP BY segment
+ORDER BY segment;
+
