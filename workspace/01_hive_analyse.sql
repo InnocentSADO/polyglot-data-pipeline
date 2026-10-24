@@ -114,5 +114,64 @@ SELECT
   MAX(release_year)                                                         AS annee_max
 FROM catalogue_contenus;
 
--- TODO A2 : analyse distribuee
+-- =====================================================================
+-- A2. ANALYSE DISTRIBUEE
+-- =====================================================================
+
+-- A2.1 Repartition des evenements par pays
+SELECT country, COUNT(*) AS nb_evenements
+FROM evenements_massifs
+GROUP BY country
+ORDER BY nb_evenements DESC;
+
+-- A2.2 Repartition des evenements par type
+SELECT event_type, COUNT(*) AS nb_evenements
+FROM evenements_massifs
+GROUP BY event_type
+ORDER BY nb_evenements DESC;
+
+-- A2.3 Croisement pays x type (tableau pivot, 1 seul passage)
+SELECT country,
+       SUM(IF(event_type = 'lecture',      1, 0)) AS lecture,
+       SUM(IF(event_type = 'pause',        1, 0)) AS pause,
+       SUM(IF(event_type = 'recherche',    1, 0)) AS recherche,
+       SUM(IF(event_type = 'abandon',      1, 0)) AS abandon,
+       SUM(IF(event_type = 'ajout_favori', 1, 0)) AS ajout_favori,
+       COUNT(*)                                   AS total
+FROM evenements_massifs
+GROUP BY country
+ORDER BY total DESC;
+
+-- A2.4 Top 10 des contenus selon la duree totale (jointure avec le catalogue)
+SELECT e.content_id, c.title, c.genre,
+       SUM(e.watch_seconds) AS total_watch_sec,
+       COUNT(*)             AS nb_evenements
+FROM evenements_massifs e
+JOIN catalogue_contenus c ON e.content_id = c.content_id
+GROUP BY e.content_id, c.title, c.genre
+ORDER BY total_watch_sec DESC
+LIMIT 10;
+
+-- A2.5 Duree moyenne par appareil et qualite
+--  * duree_moy_tous    : tous types d'evenements (pause/recherche ~ 90 s)
+--  * duree_moy_lecture : evenements 'lecture' seulement (plus representatif)
+SELECT device, quality,
+       COUNT(*)                                                       AS nb_evenements,
+       ROUND(AVG(watch_seconds), 1)                                   AS duree_moy_tous,
+       ROUND(AVG(IF(event_type = 'lecture', watch_seconds, NULL)), 1) AS duree_moy_lecture
+FROM evenements_massifs
+GROUP BY device, quality
+ORDER BY device, quality;
+
+-- A2.6 Plan d'execution de la requete A2.4 (jointure + agregation + tri)
+EXPLAIN
+SELECT e.content_id, c.title, c.genre,
+       SUM(e.watch_seconds) AS total_watch_sec,
+       COUNT(*)             AS nb_evenements
+FROM evenements_massifs e
+JOIN catalogue_contenus c ON e.content_id = c.content_id
+GROUP BY e.content_id, c.title, c.genre
+ORDER BY total_watch_sec DESC
+LIMIT 10;
+
 -- TODO A3 : segments par utilisateur -> /inf6303/devoir1/sorties/segments

@@ -17,3 +17,10 @@
 - Parallélisme : gzip non découpable -> 1 map par fichier ; 8 fichiers = 8 splits = jusqu'à 8 maps parallèles
 - Compressé vs logique : HDFS ne voit que des octets ; le nombre de lignes n'apparaît qu'à la décompression (lecture Hive)
 - Reprise : 1re exécution du dépôt interrompue après 7 fichiers ; script idempotent (rm puis put) relancé sans risque
+
+## Partie A2 - Analyse distribuée
+- Pays, types, top 10 : identiques au manifeste (preuves/A2_resultats.txt)
+- 8 tâches map (1 par gzip) grâce à HiveInputFormat
+- Durée moyenne ~uniforme par appareil/qualité (~2 020 s tous types, ~3 600 s lectures) ; l'écart vient du type d'événement (lecture ~3 600 s vs autres ~90 s)
+- EXPLAIN top 10 : Stage-6 map join (catalogue diffusé en table de hachage) ; Stage-2 jointure + pré-agrégation côté map puis SHUFFLE (Reduce Output Operator) = opération coûteuse ; Stage-3 ORDER BY global sur 1 reducer (Top-N)
+- Statistiques estimées (237 575 lignes) ≠ réelles (1 000 000) : pas de stats sur table externe -> ANALYZE TABLE recommandé
