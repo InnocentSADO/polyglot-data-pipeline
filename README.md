@@ -120,6 +120,8 @@ bash /home/jovyan/work/run_pipeline.sh
 
 Architecture détaillée : [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) · Procédure complète : [`README_EQUIPE.md`](README_EQUIPE.md)
 
----
+<!---
 
 **Auteur :** Innocent Sado *(coéquipiers éventuels à ajouter)* · [GitHub](https://github.com/InnocentSADO)
+
+-->
