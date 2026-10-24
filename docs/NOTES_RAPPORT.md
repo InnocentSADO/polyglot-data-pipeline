@@ -48,3 +48,21 @@
 - Segments : actif 30 901, intensif 7 430, occasionnel 11 669 (= manifeste) ; bornes 55 000 / 29 999 / 54 999 respectées
 - getmerge -> workspace/output/segments_utilisateurs.csv (50 000 lignes, 1,65 Mo)
 - Observation : nb_events moyen croît avec le segment (16,3 / 20,3 / 24,8)
+
+## Partie B - MongoDB
+### B1 - Import documentaire
+- 50 000 lignes JSON -> 50 000 documents BSON (insert_many par lots de 5 000) ; collection vidée à chaque exécution (rejouable)
+- Structure préservée : preferences = sous-document, preferences.genres et devices = tableaux (50 000/50 000) ; signup_date -> date BSON
+- Index unique ux_user_id (clé d'interconnexion ; doublon u000001 refusé E11000)
+- Index composé ix_segment_consent_country (analytics.segment, consent_analytics, country) = filtre de l'export B3 + accès par segment/pays
+### B2 - Enrichissement interconnecté
+- segments_utilisateurs.csv (Hive) -> $set analytics {nb_events, total_watch_sec, segment, source, enrichi_le} par user_id, bulk_write, SANS upsert
+- 50 000 profils = 50 000 lignes Hive = 50 000 trouvés = 50 000 enrichis ; 0 absent ; 0 écart de pays Hive/MongoDB
+- explain() export (70 % des docs) : FETCH <- IXSCAN, docsExamined 34 855 = nReturned, mais 39 ms vs 29 ms en COLLSCAN -> requête peu sélective
+- explain() sélectif (Tunisie/intensif) : 382 docs examinés en 0 ms vs 50 000 en 22 ms -> l'index est rentable quand la requête est sélective
+### B3 - Sortie transmise à Cassandra
+- audience_cible.jsonl : consentants + segments intensif/actif, projection user_id, country, plan, analytics ; tri par user_id
+- 34 855 = filtre MongoDB = lignes = user_id distincts
+- Réduction : 1 000 000 événements -> 50 000 utilisateurs -> 38 331 (sans 11 669 occasionnels) -> 34 855 (sans 3 476 non consentants)
+- En octets : JSONL 6,8 Mo > CSV 1,65 Mo (JSON autodescriptif, noms de champs répétés) mais 13x < 89 Mo d'événements bruts
+- Déséquilibre (pays, segment) : Canada/actif 8 792 vs Tunisie/intensif 382 (x23) -> risque de partition chaude en Cassandra

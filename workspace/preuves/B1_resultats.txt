@@ -1,0 +1,17 @@
+
+=== B1 - Import documentaire ===
+lignes JSON lues             : 50000
+documents inseres            : 50000
+documents en base            : 50000
+preferences = sous-document  : 50000
+preferences.genres = tableau : 50000
+devices = tableau            : 50000
+signup_date = date BSON      : 50000
+consent_analytics = true     : 45497
+exemple u000001 : {'user_id': 'u000001', 'country': 'Senegal', 'plan': 'gratuit', 'signup_date': datetime.datetime(2025, 1, 12, 0, 0), 'age_group': '18-24', 'preferences': {'genres': ['science_fiction', 'comedie', 'actualite'], 'language': 'fr-en'}, 'devices': ['television', 'tablette', 'mobile'], 'consent_analytics': True}
+
+=== B1 - Index ===
+_id_                         [('_id', 1)]  unique=False
+ux_user_id                   [('user_id', 1)]  unique=True
+ix_segment_consent_country   [('analytics.segment', 1), ('consent_analytics', 1), ('country', 1)]  unique=False
+Unicite verifiee : insertion d'un 2e u000001 refusee (E11000 duplicate key)

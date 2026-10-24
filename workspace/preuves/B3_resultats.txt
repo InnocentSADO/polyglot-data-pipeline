@@ -1,0 +1,83 @@
+
+=== B1 - Import documentaire ===
+lignes JSON lues             : 50000
+documents inseres            : 50000
+documents en base            : 50000
+preferences = sous-document  : 50000
+preferences.genres = tableau : 50000
+devices = tableau            : 50000
+signup_date = date BSON      : 50000
+consent_analytics = true     : 45497
+exemple u000001 : {'user_id': 'u000001', 'country': 'Senegal', 'plan': 'gratuit', 'signup_date': datetime.datetime(2025, 1, 12, 0, 0), 'age_group': '18-24', 'preferences': {'genres': ['science_fiction', 'comedie', 'actualite'], 'language': 'fr-en'}, 'devices': ['television', 'tablette', 'mobile'], 'consent_analytics': True}
+
+=== B1 - Index ===
+_id_                         [('_id', 1)]  unique=False
+ux_user_id                   [('user_id', 1)]  unique=True
+ix_segment_consent_country   [('analytics.segment', 1), ('consent_analytics', 1), ('country', 1)]  unique=False
+Unicite verifiee : insertion d'un 2e u000001 refusee (E11000 duplicate key)
+
+=== B2 - Enrichissement par la sortie Hive ===
+profils en base (MongoDB)          : 50000
+lignes segments (sortie Hive)      : 50000
+profils trouves par user_id        : 50000
+profils modifies                   : 50000
+profils enrichis (analytics)       : 50000
+profils sans analytics             : 0
+user_id Hive absents de MongoDB    : 0
+ecarts de pays Hive vs profil      : 0
+repartition des segments dans MongoDB :
+   actif        30901
+   intensif     7430
+   occasionnel  11669
+exemple u000001 analytics : {'nb_events': 26, 'total_watch_sec': 60487, 'segment': 'intensif', 'source': 'hive:/inf6303/devoir1/sorties/segments', 'enrichi_le': datetime.datetime(2026, 10, 24, 3, 12, 25, 230000)}
+
+=== B2 - explain() de la requete d'export ===
+[avec index compose] plan : FETCH <- IXSCAN[ix_segment_consent_country]
+   bornes d'index : {'analytics.segment': ['["actif", "actif"]', '["intensif", "intensif"]'], 'consent_analytics': ['[true, true]'], 'country': ['[MinKey, MaxKey]']}
+   nReturned=34855  totalKeysExamined=34857  totalDocsExamined=34855  executionTimeMillis=35
+[parcours complet] plan : COLLSCAN
+   nReturned=34855  totalKeysExamined=0  totalDocsExamined=50000  executionTimeMillis=27
+
+=== B3 - Export de l'audience cible ===
+documents exportes : 34855 -> /home/jovyan/work/output/audience_cible.jsonl
+
+=== B5 - Controles de l'export ===
+documents MongoDB correspondant au filtre : 34855
+lignes du fichier audience_cible.jsonl    : 34855
+user_id distincts dans le fichier         : 34855
+segments presents                          : ['actif', 'intensif']
+exemple : {'user_id': 'u000001', 'country': 'Senegal', 'plan': 'gratuit', 'analytics': {'nb_events': 26, 'total_watch_sec': 60487, 'segment': 'intensif', 'source': 'hive:/inf6303/devoir1/sorties/segments'}}
+
+=== B5 - Pourquoi la sortie est plus petite que la source Hive ===
+evenements analyses par Hive               : 1 000 000
+lignes segments_utilisateurs.csv (Hive)    : 50000   (agregation : 1 ligne par user_id)
+  - occasionnels exclus                    : 11669
+= segments intensif + actif                : 38331
+  - non consentants exclus                 : 3476
+= audience exportee                        : 34855
+taille segments_utilisateurs.csv           :   1654528 octets
+taille audience_cible.jsonl                :   6802704 octets
+
+=== B5 - Audience par (pays, segment) : futures partitions Cassandra ===
+   Canada         actif     8792
+   Senegal        actif     3666
+   Cote_d_Ivoire  actif     3370
+   France         actif     3305
+   Maroc          actif     2752
+   Cameroun       actif     2536
+   Canada         intensif  2077
+   Belgique       actif     1978
+   Tunisie        actif     1672
+   Senegal        intensif  932
+   France         intensif  820
+   Cote_d_Ivoire  intensif  811
+   Maroc          intensif  684
+   Cameroun       intensif  604
+   Belgique       intensif  474
+   Tunisie        intensif  382
+
+=== B5 - explain() d'une requete selective (index pertinent) ===
+[avec index compose] plan : FETCH <- IXSCAN[ix_segment_consent_country]
+   nReturned=382  totalKeysExamined=382  totalDocsExamined=382  executionTimeMillis=0
+[parcours complet] plan : COLLSCAN
+   nReturned=382  totalKeysExamined=0  totalDocsExamined=50000  executionTimeMillis=22
