@@ -66,3 +66,24 @@
 - Réduction : 1 000 000 événements -> 50 000 utilisateurs -> 38 331 (sans 11 669 occasionnels) -> 34 855 (sans 3 476 non consentants)
 - En octets : JSONL 6,8 Mo > CSV 1,65 Mo (JSON autodescriptif, noms de champs répétés) mais 13x < 89 Mo d'événements bruts
 - Déséquilibre (pays, segment) : Canada/actif 8 792 vs Tunisie/intensif 382 (x23) -> risque de partition chaude en Cassandra
+
+## Partie C - Cassandra
+### C1 - Modèle orienté requête
+- Requête cible : top utilisateurs d'un (pays, segment) par score décroissant
+- PRIMARY KEY ((country, segment), score, user_id) WITH CLUSTERING ORDER BY (score DESC, user_id ASC)
+- Partition (country, segment) : 1 requête = 1 partition (1 nœud) ; clustering score DESC : déjà trié sur disque, top N = N premières lignes
+- user_id en clustering : départage les scores égaux (sinon écrasement par upsert) -> 34 855 lignes conservées
+- score = total_watch_sec (mesure de segmentation) ; plan et nb_events dénormalisés (pas de jointure) ; Cassandra = vue de service, MongoDB = source
+- Keyspace SimpleStrategy RF=1 (1 nœud) ; production : NetworkTopologyStrategy RF=3
+- Partition chaude : Canada/actif 8 792 lignes vs Tunisie/intensif 382 (x23) ; parade : bucket ((country, segment, bucket)) avec bucket = hash(user_id) % N
+- PLAN est un mot réservé CQL (Cassandra 5) : colonne affichée "plan"
+### C2 - Chargement
+- Lecture de audience_cible.jsonl ; INSERT préparé + execute_concurrent_with_args (64 en parallèle)
+- 34 855 exportés = 34 855 insérés (0 échec) = COUNT global 34 855 ; 16/16 partitions identiques ; 5,6 s (~6 300 lignes/s)
+### C3 - Requêtes de service
+- Top 10 Canada/intensif : 1 partition, 3,8 ms ; identique au top 10 recalculé depuis le JSONL (True)
+- Top 10 Senegal/intensif : 1 partition, 1,8 ms
+- WHERE plan = 'premium' : refusée (data filtering) ; avec ALLOW FILTERING : 87 ms, balayage complet -> non naturel
+- Nouvelle table audience_par_plan PRIMARY KEY ((plan, country), score, user_id) : 34 855 lignes, top 5 premium/Canada en 1,7 ms
+- (plan) seul = 3 partitions énormes (gratuit 16 831) -> chaudes ; (plan, country) = 24 partitions ; top global par plan = 8 lectures + fusion applicative
+- Cohérence inter-tables : u049062 (95 407) et u029858 (90 175) identiques dans les deux tables

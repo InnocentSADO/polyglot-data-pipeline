@@ -1,0 +1,52 @@
+
+=== C1 - Connexion et keyspace ===
+Connecte a INF6303 | version 5.0.9
+CREATE TABLE inf6303_devoir1.audience_par_pays_segment (
+    country text,
+    segment text,
+    score bigint,
+    user_id text,
+    nb_events int,
+    "plan" text,
+    PRIMARY KEY ((country, segment), score, user_id)
+) WITH CLUSTERING ORDER BY (score DESC, user_id ASC)
+    AND additional_write_policy = '99p'
+    AND bloom_filter_fp_chance = 0.01
+    AND caching = {'keys': 'ALL', 'rows_per_partition': 'NONE'}
+    AND comment = ''
+    AND compaction = {'class': 'org.apache.cassandra.db.compaction.SizeTieredCompactionStrategy', 'max_threshold': '32', 'min_threshold': '4'}
+    AND compression = {'chunk_length_in_kb': '16', 'class': 'org.apache.cassandra.io.compress.LZ4Compressor'}
+    AND crc_check_chance = 1.0
+    AND default_time_to_live = 0
+    AND gc_grace_seconds = 864000
+    AND max_index_interval = 2048
+    AND memtable_flush_period_in_ms = 0
+    AND min_index_interval = 128
+    AND read_repair = 'BLOCKING'
+    AND speculative_retry = '99p';
+
+=== C2 - Chargement avec requete preparee ===
+documents dans audience_cible.jsonl : 34855
+insertions reussies                 : 34855  (echecs : 0)
+duree du chargement                 : 5.6 s (6266 lignes/s)
+
+=== C2 - Comparaison exportes MongoDB vs lignes chargees Cassandra ===
+lignes dans la table (COUNT global) : 34855
+partition (pays, segment)         fichier  Cassandra
+Canada / actif                       8792       8792
+Senegal / actif                      3666       3666
+Cote_d_Ivoire / actif                3370       3370
+France / actif                       3305       3305
+Maroc / actif                        2752       2752
+Cameroun / actif                     2536       2536
+Canada / intensif                    2077       2077
+Belgique / actif                     1978       1978
+Tunisie / actif                      1672       1672
+Senegal / intensif                    932        932
+France / intensif                     820        820
+Cote_d_Ivoire / intensif              811        811
+Maroc / intensif                      684        684
+Cameroun / intensif                   604        604
+Belgique / intensif                   474        474
+Tunisie / intensif                    382        382
+partitions : 16 | partitions en ecart : 0

@@ -1,0 +1,94 @@
+
+=== C1 - Connexion et keyspace ===
+Connecte a INF6303 | version 5.0.9
+CREATE TABLE inf6303_devoir1.audience_par_pays_segment (
+    country text,
+    segment text,
+    score bigint,
+    user_id text,
+    nb_events int,
+    "plan" text,
+    PRIMARY KEY ((country, segment), score, user_id)
+) WITH CLUSTERING ORDER BY (score DESC, user_id ASC)
+    AND additional_write_policy = '99p'
+    AND bloom_filter_fp_chance = 0.01
+    AND caching = {'keys': 'ALL', 'rows_per_partition': 'NONE'}
+    AND comment = ''
+    AND compaction = {'class': 'org.apache.cassandra.db.compaction.SizeTieredCompactionStrategy', 'max_threshold': '32', 'min_threshold': '4'}
+    AND compression = {'chunk_length_in_kb': '16', 'class': 'org.apache.cassandra.io.compress.LZ4Compressor'}
+    AND crc_check_chance = 1.0
+    AND default_time_to_live = 0
+    AND gc_grace_seconds = 864000
+    AND max_index_interval = 2048
+    AND memtable_flush_period_in_ms = 0
+    AND min_index_interval = 128
+    AND read_repair = 'BLOCKING'
+    AND speculative_retry = '99p';
+
+=== C2 - Chargement avec requete preparee ===
+documents dans audience_cible.jsonl : 34855
+insertions reussies                 : 34855  (echecs : 0)
+duree du chargement                 : 4.3 s (8067 lignes/s)
+
+=== C2 - Comparaison exportes MongoDB vs lignes chargees Cassandra ===
+lignes dans la table (COUNT global) : 34855
+partition (pays, segment)         fichier  Cassandra
+Canada / actif                       8792       8792
+Senegal / actif                      3666       3666
+Cote_d_Ivoire / actif                3370       3370
+France / actif                       3305       3305
+Maroc / actif                        2752       2752
+Cameroun / actif                     2536       2536
+Canada / intensif                    2077       2077
+Belgique / actif                     1978       1978
+Tunisie / actif                      1672       1672
+Senegal / intensif                    932        932
+France / intensif                     820        820
+Cote_d_Ivoire / intensif              811        811
+Maroc / intensif                      684        684
+Cameroun / intensif                   604        604
+Belgique / intensif                   474        474
+Tunisie / intensif                    382        382
+partitions : 16 | partitions en ecart : 0
+
+=== C3 - Top 10 Canada / intensif (score decroissant) ===
+rang user_id     score plan      nb_events
+   1 u012192     99744 standard         36
+   2 u047861     96938 standard         28
+   3 u025691     95497 standard         34
+   4 u049062     95407 premium          42
+   5 u042077     94314 standard         30
+   6 u001658     94019 standard         24
+   7 u007230     93381 gratuit          26
+   8 u013563     93250 gratuit          37
+   9 u025640     90301 gratuit          31
+  10 u029858     90175 premium          33
+trace : duree serveur 3.8 ms ; 5 evenements ; ex. : ['Executing single-partition query on audience_par_pays_segment']
+verification : top 10 Cassandra == top 10 recalcule depuis audience_cible.jsonl -> True
+
+=== C3 - Top 10 Senegal / intensif (score decroissant) ===
+rang user_id     score plan      nb_events
+   1 u042433    105910 standard         40
+   2 u038953    103306 standard         37
+   3 u009818     95404 premium          31
+   4 u014699     95172 gratuit          35
+   5 u013514     93950 gratuit          35
+   6 u001109     93187 standard         31
+   7 u002854     90899 premium          23
+   8 u004065     90494 standard         29
+   9 u018092     89711 standard         35
+  10 u042654     89041 premium          33
+trace : duree serveur 1.8 ms ; 5 evenements ; ex. : ['Executing single-partition query on audience_par_pays_segment']
+
+=== C3 - Recherche globale par plan (premium) sur la table (pays, segment) ===
+REFUSEE par Cassandra : "Cannot execute this query as it might involve data filtering and thus may have unpredictable performance. If you want to execute this query despite the performance unpredictability, use ALLOW FILTERING"
+avec ALLOW FILTERING : 6352 lignes premium trouvees, mais 87.1 ms et 12 evenements de trace : balayage de TOUTES les partitions puis filtrage (cout proportionnel a la table entiere)
+
+=== C3 - Table supplementaire audience_par_plan : PRIMARY KEY ((plan, country), score, user_id) ===
+lignes chargees : 34855 / 34855
+   u049062     95407  intensif
+   u029858     90175  intensif
+   u004019     89320  intensif
+   u015255     88606  intensif
+   u041159     87811  intensif
+trace : 1.7 ms, lecture d'une seule partition
