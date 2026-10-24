@@ -1,0 +1,37 @@
+
+=== 1. Hive - recalcul depuis les 1 000 000 evenements bruts (HDFS) ===
+   u000001 : pays=Senegal nb_events=26 total_watch_sec=60487
+   u000004 : pays=Canada nb_events=18 total_watch_sec=51017
+   u000006 : pays=France nb_events=22 total_watch_sec=22735
+
+=== 2. Hive - table segments_utilisateurs (/inf6303/devoir1/sorties/segments) ===
+   u000001 : ['Senegal', '26', '60487', 'intensif']
+   u000004 : ['Canada', '18', '51017', 'actif']
+   u000006 : ['France', '22', '22735', 'occasionnel']
+
+=== 3. Fichier de passage output/segments_utilisateurs.csv ===
+   u000001 : ['Senegal', '26', '60487', 'intensif']
+   u000004 : ['Canada', '18', '51017', 'actif']
+   u000006 : ['France', '22', '22735', 'occasionnel']
+
+=== 4. MongoDB - inf6303_devoir1.profils ===
+   u000001 : {'user_id': 'u000001', 'country': 'Senegal', 'plan': 'gratuit', 'consent_analytics': True, 'analytics': {'nb_events': 26, 'total_watch_sec': 60487, 'segment': 'intensif'}}
+   u000004 : {'user_id': 'u000004', 'country': 'Canada', 'plan': 'premium', 'consent_analytics': False, 'analytics': {'nb_events': 18, 'total_watch_sec': 51017, 'segment': 'actif'}}
+   u000006 : {'user_id': 'u000006', 'country': 'France', 'plan': 'premium', 'consent_analytics': True, 'analytics': {'nb_events': 22, 'total_watch_sec': 22735, 'segment': 'occasionnel'}}
+
+=== 5. Fichier de passage output/audience_cible.jsonl ===
+   u000001 : PRESENT {'user_id': 'u000001', 'country': 'Senegal', 'plan': 'gratuit', 'analytics': {'nb_events': 26, 'total_watch_sec': 60487, 'segment': 'intensif', 'source': 'hive:/inf6303/devoir1/sorties/segments'}}
+   u000004 : ABSENT
+   u000006 : ABSENT
+
+=== 6. Cassandra - audience_par_pays_segment (cle primaire complete) ===
+   u000001 : PRESENT score=60487 plan=gratuit nb_events=26 rang=488 dans Senegal/intensif
+   u000004 : ABSENT (partition Canada/actif)
+   u000006 : ABSENT (partition France/occasionnel)
+
+=== Synthese D1 (tableau Markdown pour le rapport) ===
+| user_id | Hive brut (nb / duree) | Hive sortie (segment) | CSV | MongoDB analytics (nb / duree / segment) | consent | plan | audience_cible.jsonl | Cassandra (score / rang) | Explication |
+|---|---|---|---|---|---|---|---|---|---|
+| u000001 | 26 / 60487 | intensif | intensif | 26 / 60487 / intensif | True | gratuit | oui | 60487 / 488 | present partout, valeurs identiques |
+| u000004 | 18 / 51017 | actif | actif | 18 / 51017 / actif | False | premium | non | absent | absent de Cassandra : non consentant (filtre de l'export B3) |
+| u000006 | 22 / 22735 | occasionnel | occasionnel | 22 / 22735 / occasionnel | True | premium | non | absent | absent de Cassandra : segment occasionnel (filtre de l'export B3) |
